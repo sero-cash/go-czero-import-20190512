@@ -171,3 +171,10 @@ func IsMyPKr(tk *Uint512,pkr *Uint512)(succ bool) {
     }
 }
 
+func SignOAddr(seed * Uint256,data *Uint256,a *Uint256,R *Uint256) (sign Uint256,e error) {
+    return
+}
+
+func VerifyOAddr(data *Uint256,sign *Uint256,R *Uint256) (bool) {
+    return true
+}
