@@ -26,7 +26,7 @@ import "C"
 import (
     "encoding/hex"
     "unsafe"
-    "math/rand"
+	"crypto/rand"
 )
 
 
@@ -119,23 +119,17 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 
 
 func RandUint512() (hash Uint512) {
-    for i,_:=range hash {
-        hash[i]=uint8(rand.Int())
-    }
+	rand.Read(hash[:])
     return
 }
 
 func RandUint256() (hash Uint256) {
-    for i,_:=range hash {
-        hash[i]=uint8(rand.Int())
-    }
+	rand.Read(hash[:])
     return
 }
 
 func RandUint128() (hash Uint128) {
-    for i,_:=range hash {
-        hash[i]=uint8(rand.Int())
-    }
+	rand.Read(hash[:])
     return
 }
 
