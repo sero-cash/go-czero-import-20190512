@@ -18,95 +18,91 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo LDFLAGS: -L ../czero/lib -l czero
+#cgo LDFLAGS: -L ../czero/lib -l czerod
 #include "zero.h"
- */
+*/
 import "C"
 
 import (
-    "encoding/hex"
-    "unsafe"
 	"crypto/rand"
+	"encoding/hex"
+	"unsafe"
 )
-
-
 
 type Uint256 [32]byte
 type Uint512 [64]byte
 type Uint128 [16]byte
 
 func Seeds2Tks(seeds []Uint256) (tks []Uint512) {
-    for _,seed:=range seeds {
-        tks=append(tks,Seed2Tk(&seed))
-    }
-    return
+	for _, seed := range seeds {
+		tks = append(tks, Seed2Tk(&seed))
+	}
+	return
 }
 
 func (b *Uint128) ToUint256() (ret Uint256) {
-    copy(ret[:],b[:])
-    return
+	copy(ret[:], b[:])
+	return
 }
 
-var Empty_Uint256=Uint256{}
-var Empty_Uint512=Uint512{}
+var Empty_Uint256 = Uint256{}
+var Empty_Uint512 = Uint512{}
 
-func (self Uint256) NewRef()(ret *Uint256) {
-    ret=&Uint256{}
-    copy(ret[:],self[:])
-    return ret;
+func (self Uint256) NewRef() (ret *Uint256) {
+	ret = &Uint256{}
+	copy(ret[:], self[:])
+	return ret
 }
 
 func (self Uint256) LogOut() {
-    logBytes(self[:])
+	logBytes(self[:])
 }
 
-
-func (self Uint512) NewRef()(ret *Uint512) {
-    ret=&Uint512{}
-    copy(ret[:],self[:])
-    return ret;
+func (self Uint512) NewRef() (ret *Uint512) {
+	ret = &Uint512{}
+	copy(ret[:], self[:])
+	return ret
 }
 
 func (self Uint512) LogOut() {
-    logBytes(self[:])
+	logBytes(self[:])
 }
 
 func (b Uint256) MarshalText() ([]byte, error) {
-    result := make([]byte, len(b)*2+2)
-    copy(result, `0x`)
-    hex.Encode(result[2:],b[:])
-    return result, nil
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
 }
 
 func (b Uint512) MarshalText() ([]byte, error) {
-    result := make([]byte, len(b)*2+2)
-    copy(result, `0x`)
-    hex.Encode(result[2:],b[:])
-    return result, nil
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
 }
 
 func (b Uint128) MarshalText() ([]byte, error) {
-    result := make([]byte, len(b)*2+2)
-    copy(result, `0x`)
-    hex.Encode(result[2:],b[:])
-    return result, nil
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
 }
 
-
 func logBytes(bytes []byte) {
-    C.zero_log_bytes(
-        (*C.uchar)(unsafe.Pointer(&bytes[0])),
-        (C.int)(len(bytes)),
-    )
-    return
+	C.zero_log_bytes(
+		(*C.uchar)(unsafe.Pointer(&bytes[0])),
+		(C.int)(len(bytes)),
+	)
+	return
 }
 
 func Seed2Tk(seed *Uint256) (tk Uint512) {
-    C.zero_seed2tk(
-        (*C.uchar)(unsafe.Pointer(&seed[0])),
-        (*C.uchar)(unsafe.Pointer(&tk[0])),
-    )
-    return
+	C.zero_seed2tk(
+		(*C.uchar)(unsafe.Pointer(&seed[0])),
+		(*C.uchar)(unsafe.Pointer(&tk[0])),
+	)
+	return
 }
 
 func Seed2Addr(seed *Uint256) (addr Uint512) {
@@ -117,58 +113,57 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 	return
 }
 
-
 func RandUint512() (hash Uint512) {
 	rand.Read(hash[:])
-    return
+	return
 }
 
 func RandUint256() (hash Uint256) {
 	rand.Read(hash[:])
-    return
+	return
 }
 
 func RandUint128() (hash Uint128) {
 	rand.Read(hash[:])
-    return
+	return
 }
 
-func Addr2PKr(addr *Uint512,r *Uint256) (pkr Uint512) {
-    if r==nil {
-        t:=RandUint256()
-        r=&t
-    } else {
-        empty:=Uint256{}
-        if (*r)==empty {
-            panic("gen pkr, but r is empty")
-        }
-    }
-    C.zero_pk2pkr(
-        (*C.uchar)(unsafe.Pointer(&addr[0])),
-        (*C.uchar)(unsafe.Pointer(&r[0])),
-        (*C.uchar)(unsafe.Pointer(&pkr[0])),
-    )
-    return
+func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
+	if r == nil {
+		t := RandUint256()
+		r = &t
+	} else {
+		empty := Uint256{}
+		if (*r) == empty {
+			panic("gen pkr, but r is empty")
+		}
+	}
+	C.zero_pk2pkr(
+		(*C.uchar)(unsafe.Pointer(&addr[0])),
+		(*C.uchar)(unsafe.Pointer(&r[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+	)
+	return
 }
 
-func IsMyPKr(tk *Uint512,pkr *Uint512)(succ bool) {
-    ret:=C.zero_ismy_pkr(
-        (*C.uchar)(unsafe.Pointer(&pkr[0])),
-        (*C.uchar)(unsafe.Pointer(&tk[0])),
-    )
-    if(ret==C.char(0)) {
-        succ=true
-        return
-    } else {
-        succ=false
-        return
-    }
+func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
+	ret := C.zero_ismy_pkr(
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&tk[0])),
+	)
+	if ret == C.char(0) {
+		succ = true
+		return
+	} else {
+		succ = false
+		return
+	}
 }
 
-func SignOAddr(seed * Uint256,data *Uint256,a *Uint256,R *Uint256) (sign Uint256,e error) {
-    return
+func SignOAddr(seed *Uint256, data *Uint256, a *Uint256, R *Uint256) (sign Uint256, e error) {
+	return
 }
 
-func VerifyOAddr(data *Uint256,sign *Uint256,R *Uint256) (bool) {
-    return true
+func VerifyOAddr(data *Uint256, sign *Uint256, R *Uint256) bool {
+	return true
 }
