@@ -18,7 +18,7 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo LDFLAGS: -L ../czero/lib -l czerod
+#cgo LDFLAGS: -L ../czero/lib -l czero
 #include "zero.h"
 */
 import "C"
