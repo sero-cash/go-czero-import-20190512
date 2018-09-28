@@ -1,4 +1,4 @@
-# Warning
+# go-czero-import
 
 **this repository is related with zcash module, implemented by c++.**
 
