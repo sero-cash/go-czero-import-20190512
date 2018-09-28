@@ -10,7 +10,9 @@ privacy for its users compared to other cryptocurrencies such as Bitcoin.
 transaction address encrypt which provide strongest protection of user's 
 privacy.
 
-
+## implemented in c++
+czero is based on sophisticate and elegant algrithm implemented c++ code, provide
+high speed proof generation and verification on go based block chain.
 
 ### What are zk-SNARKs?
 Zcash is the first widespread application of zk-SNARKs, a novel form of zero-knowledge 
