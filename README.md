@@ -12,7 +12,7 @@ privacy.
 
 
 
-What are zk-SNARKs?
+### What are zk-SNARKs?
 Zcash is the first widespread application of zk-SNARKs, a novel form of zero-knowledge 
 cryptography. The strong privacy guarantee of Zcash is derived from the fact that 
 shielded transactions in Zcash can be fully encrypted on the blockchain, yet still be 
