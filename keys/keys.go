@@ -133,8 +133,7 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 		t := RandUint256()
 		r = &t
 	} else {
-		empty := Uint256{}
-		if (*r) == empty {
+		if (*r) == Empty_Uint256 {
 			panic("gen pkr, but r is empty")
 		}
 	}
@@ -144,6 +143,17 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 	)
 	return
+}
+
+type LICr [64]byte
+
+func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr) {
+	pkr = Addr2PKr(addr, nil)
+	return
+}
+
+func CheckLICr(pkr *Uint512, licr *LICr) bool {
+	return true
 }
 
 func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
