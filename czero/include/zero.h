@@ -35,6 +35,17 @@ extern void zero_pk2pkr(
     unsigned char pkr[64]
 );
 
+extern char zero_pk2pkr_and_licr(
+    const unsigned char pk[64],
+    unsigned char pkr[64],
+    unsigned char licr[ZERO_LIC_WIDTH]
+);
+
+extern char zero_check_licr(
+    const unsigned char pkr[64],
+    const unsigned char licr[ZERO_LIC_WIDTH]
+);
+
 extern void zero_random32(unsigned char r[32]);
 
 extern void zero_fee_str(char *p);
