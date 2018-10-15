@@ -31,9 +31,16 @@ import (
 
 var init_chan = make(chan bool)
 
-func ZeroInit() error {
+type NetType uint8
+const (
+	NET_Dev NetType=0
+	NET_Alpha NetType=1
+	NET_Beta NetType=2
+)
+
+func ZeroInit(netType NetType) error {
 	go func() {
-		C.zero_init()
+		C.zero_init(C.uchar(netType))
 		init_chan <- true
 	}()
 	<-init_chan
