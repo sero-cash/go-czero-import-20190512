@@ -16,7 +16,6 @@
 
 package cpt
 
-const ETEXT_WIDTH=32*6
-const PROOF_WIDTH=259
-const DEPTH=18
-
+const ETEXT_WIDTH = 32 * 6
+const PROOF_WIDTH = 259
+const DEPTH = 18
