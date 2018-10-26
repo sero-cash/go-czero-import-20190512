@@ -32,10 +32,11 @@ import (
 var init_chan = make(chan bool)
 
 type NetType uint8
+
 const (
-	NET_Dev NetType=0
-	NET_Alpha NetType=1
-	NET_Beta NetType=2
+	NET_Dev   NetType = 0
+	NET_Alpha NetType = 1
+	NET_Beta  NetType = 2
 )
 
 func ZeroInit(netType NetType) error {
