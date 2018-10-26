@@ -17,46 +17,47 @@
 package main
 
 import (
-    "testing"
-    "github.com/sero-cash/go-czero-import/cpt"
-    "github.com/sero-cash/go-czero-import/keys"
+	"testing"
+
+	"github.com/sero-cash/go-czero-import/cpt"
+	"github.com/sero-cash/go-czero-import/keys"
 )
 
 func TestCpt(t *testing.T) {
-    cpt.ZeroInit()
-    rad:=cpt.Random()
-    base58:=cpt.Base58Encode(rad[:])
-    if base58==nil {
-        t.FailNow()
-    }
-    rad_ret:=keys.Uint256{}
-    e:=cpt.Base58Decode(base58,rad_ret[:])
-    if e!=nil {
-        t.FailNow()
-    }
-    if rad_ret!=rad {
-        t.FailNow()
-    }
+	cpt.ZeroInit(cpt.NET_Dev)
+	rad := cpt.Random()
+	base58 := cpt.Base58Encode(rad[:])
+	if base58 == nil {
+		t.FailNow()
+	}
+	rad_ret := keys.Uint256{}
+	e := cpt.Base58Decode(base58, rad_ret[:])
+	if e != nil {
+		t.FailNow()
+	}
+	if rad_ret != rad {
+		t.FailNow()
+	}
 }
 
 func TestKeys(t *testing.T) {
-    seed:=cpt.Random()
-    tk:=keys.Seed2Tk(&seed)
-    pk:=keys.Seed2Addr(&seed)
-    
-    r:=cpt.Random()
-    pkr:=keys.Addr2PKr(&pk,&r)
-    is_my_pkr:=keys.IsMyPKr(&tk,&pkr)
-    if !is_my_pkr {
-        t.FailNow()
-    }
-    
-    seed1:=cpt.Random()
-    pk1:=keys.Seed2Addr(&seed1)
-    pkr1:=keys.Addr2PKr(&pk1,&r)
-    is_my_pkr1:=keys.IsMyPKr(&tk,&pkr1)
-    if is_my_pkr1 {
-        t.FailNow()
-    }
-    
+	seed := cpt.Random()
+	tk := keys.Seed2Tk(&seed)
+	pk := keys.Seed2Addr(&seed)
+
+	r := cpt.Random()
+	pkr := keys.Addr2PKr(&pk, &r)
+	is_my_pkr := keys.IsMyPKr(&tk, &pkr)
+	if !is_my_pkr {
+		t.FailNow()
+	}
+
+	seed1 := cpt.Random()
+	pk1 := keys.Seed2Addr(&seed1)
+	pkr1 := keys.Addr2PKr(&pk1, &r)
+	is_my_pkr1 := keys.IsMyPKr(&tk, &pkr1)
+	if is_my_pkr1 {
+		t.FailNow()
+	}
+
 }
