@@ -18,7 +18,7 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo LDFLAGS: -L ../czero/lib -l czero
+#cgo LDFLAGS: -L ../czero/lib -l czerod
 #include "zero.h"
 */
 import "C"
@@ -32,6 +32,11 @@ import (
 type Uint256 [32]byte
 type Uint512 [64]byte
 type Uint128 [16]byte
+
+func Str2Uint256(str string) (ret Uint256) {
+	copy(ret[:], str[:])
+	return
+}
 
 func Seeds2Tks(seeds []Uint256) (tks []Uint512) {
 	for _, seed := range seeds {
@@ -106,6 +111,7 @@ func Seed2Tk(seed *Uint256) (tk Uint512) {
 }
 
 func Seed2Addr(seed *Uint256) (addr Uint512) {
+	return Seed2Tk(seed)
 	C.zero_seed2pk(
 		(*C.uchar)(unsafe.Pointer(&seed[0])),
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
@@ -129,6 +135,7 @@ func RandUint128() (hash Uint128) {
 }
 
 func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
+	return *addr
 	if r == nil {
 		t := RandUint256()
 		r = &t
@@ -174,6 +181,7 @@ func CheckLICr(pkr *Uint512, licr *LICr) bool {
 }
 
 func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
+	return *tk == *pkr
 	ret := C.zero_ismy_pkr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&tk[0])),
