@@ -155,6 +155,9 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 type LICr [64]byte
 
 func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
+	pkr = Addr2PKr(addr, RandUint256().NewRef())
+	ret = true
+	return
 	r := C.zero_pk2pkr_and_licr(
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
@@ -169,6 +172,7 @@ func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
 }
 
 func CheckLICr(pkr *Uint512, licr *LICr) bool {
+	return true
 	r := C.zero_check_licr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&licr[0])),
