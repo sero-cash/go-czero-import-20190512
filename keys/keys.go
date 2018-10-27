@@ -33,11 +33,6 @@ type Uint256 [32]byte
 type Uint512 [64]byte
 type Uint128 [16]byte
 
-func Str2Uint256(str string) (ret Uint256) {
-	copy(ret[:], str[:])
-	return
-}
-
 func Seeds2Tks(seeds []Uint256) (tks []Uint512) {
 	for _, seed := range seeds {
 		tks = append(tks, Seed2Tk(&seed))
