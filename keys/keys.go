@@ -89,6 +89,12 @@ func (b Uint128) MarshalText() ([]byte, error) {
 	return result, nil
 }
 
+func (b *Uint128) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	_, err := hex.Decode(b[:], raw)
+	return err
+}
+
 func logBytes(bytes []byte) {
 	C.zero_log_bytes(
 		(*C.uchar)(unsafe.Pointer(&bytes[0])),
