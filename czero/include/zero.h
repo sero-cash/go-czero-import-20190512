@@ -31,7 +31,7 @@ extern void zero_seed2pk(
 
 extern void zero_pk2pkr(
     const unsigned char pk[64],
-    const unsigned char r[32],
+    const unsigned char rnd[32],
     unsigned char pkr[64]
 );
 
@@ -46,6 +46,26 @@ extern char zero_check_licr(
     const unsigned char licr[ZERO_LIC_WIDTH]
 );
 
+extern char zero_ismy_pkr(
+    const unsigned char pkr[64],
+    const unsigned char tk[64],
+    unsigned char r[32]
+);
+
+extern void zero_sign_pkr(
+    const unsigned char h[32],
+    const unsigned char seed[32],
+    const unsigned char pkr[64],
+    unsigned char s[64]
+);
+
+extern char zero_verify_pkr(
+    const unsigned char h[32],
+    const unsigned char s[64],
+    const unsigned char pkr[64]
+);
+
+
 extern void zero_random32(unsigned char r[32]);
 
 extern void zero_fee_str(char *p);
@@ -54,6 +74,14 @@ extern const char* zero_base58_enc(const unsigned char* p,int len);
 
 extern char zero_base58_dec(const char* p,unsigned char* out,int len);
 
+
+extern void zero_merkle_combine(
+    const unsigned char* d0,
+    const unsigned char* d1,
+    unsigned char* out
+);
+
+/*
 extern void zero_sha256_one(const unsigned char* d,unsigned char* out);
 
 extern void zero_sha256_two(const unsigned char* d0,const unsigned char* d1,unsigned char* out);
@@ -105,11 +133,6 @@ extern char zero_gen_desc_z(
 );
 
 
-extern char zero_ismy_pkr(
-    const unsigned char pkr[64],
-    const unsigned char tk[64]
-);
-
 extern char zero_en_einfo(
     const unsigned char pkr[64],
     const unsigned char tk[64],
@@ -153,6 +176,7 @@ extern char zero_verify_desc_z(
     //----------
     const unsigned char proof[ZERO_PROOF_WIDTH]
 );
+*/
 
 #ifdef __cplusplus
 }

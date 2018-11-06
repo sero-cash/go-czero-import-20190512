@@ -18,7 +18,7 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo LDFLAGS: -L ../czero/lib -l czerod
+#cgo darwin LDFLAGS: -L ../czero/lib -l czerod
 #include "zero.h"
 */
 import "C"
@@ -26,6 +26,7 @@ import "C"
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"unsafe"
 )
 
@@ -112,7 +113,6 @@ func Seed2Tk(seed *Uint256) (tk Uint512) {
 }
 
 func Seed2Addr(seed *Uint256) (addr Uint512) {
-	return Seed2Tk(seed)
 	C.zero_seed2pk(
 		(*C.uchar)(unsafe.Pointer(&seed[0])),
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
@@ -136,7 +136,6 @@ func RandUint128() (hash Uint128) {
 }
 
 func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
-	return *addr
 	if r == nil {
 		t := RandUint256()
 		r = &t
@@ -156,9 +155,6 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 type LICr [64]byte
 
 func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
-	pkr = Addr2PKr(addr, RandUint256().NewRef())
-	ret = true
-	return
 	r := C.zero_pk2pkr_and_licr(
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
@@ -173,7 +169,6 @@ func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
 }
 
 func CheckLICr(pkr *Uint512, licr *LICr) bool {
-	return true
 	r := C.zero_check_licr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&licr[0])),
@@ -186,10 +181,11 @@ func CheckLICr(pkr *Uint512, licr *LICr) bool {
 }
 
 func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
-	return *tk == *pkr
+	var R Uint256
 	ret := C.zero_ismy_pkr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&tk[0])),
+		(*C.uchar)(unsafe.Pointer(&R[0])),
 	)
 	if ret == C.char(0) {
 		succ = true
@@ -200,10 +196,30 @@ func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
 	}
 }
 
-func SignOAddr(seed *Uint256, data *Uint256, pkr *Uint512) (sign Uint256, e error) {
-	return
+func SignPKr(seed *Uint256, data *Uint256, pkr *Uint512) (sign Uint512, e error) {
+	C.zero_sign_pkr(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&seed[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&sign[0])),
+	)
+	if sign == Empty_Uint512 {
+		e = errors.New("SignOAddr: sign is empty")
+		return
+	} else {
+		return
+	}
 }
 
-func VerifyOAddr(data *Uint256, sign *Uint256, pkr *Uint512) bool {
-	return true
+func VerifyPKr(data *Uint256, sign *Uint512, pkr *Uint512) bool {
+	ret := C.zero_verify_pkr(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&sign[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+	)
+	if ret == C.char(0) {
+		return true
+	} else {
+		return false
+	}
 }

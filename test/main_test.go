@@ -24,7 +24,6 @@ import (
 )
 
 func TestCpt(t *testing.T) {
-	cpt.ZeroInit(cpt.NET_Dev)
 	rad := cpt.Random()
 	base58 := cpt.Base58Encode(rad[:])
 	if base58 == nil {
@@ -45,6 +44,10 @@ func TestKeys(t *testing.T) {
 	tk := keys.Seed2Tk(&seed)
 	pk := keys.Seed2Addr(&seed)
 
+	if tk == pk {
+		t.FailNow()
+	}
+
 	r := cpt.Random()
 	pkr := keys.Addr2PKr(&pk, &r)
 	is_my_pkr := keys.IsMyPKr(&tk, &pkr)
@@ -54,10 +57,35 @@ func TestKeys(t *testing.T) {
 
 	seed1 := cpt.Random()
 	pk1 := keys.Seed2Addr(&seed1)
+	tk1 := keys.Seed2Tk(&seed1)
 	pkr1 := keys.Addr2PKr(&pk1, &r)
-	is_my_pkr1 := keys.IsMyPKr(&tk, &pkr1)
-	if is_my_pkr1 {
+	is_my_pkr = keys.IsMyPKr(&tk1, &pkr1)
+	if !is_my_pkr {
+		t.FailNow()
+	}
+	is_my_pkr_err := keys.IsMyPKr(&tk, &pkr1)
+	if is_my_pkr_err {
 		t.FailNow()
 	}
 
+	h := cpt.Random()
+	sign, err := keys.SignPKr(&seed, &h, &pkr)
+	if err != nil {
+		t.FailNow()
+	}
+
+	v_ok := keys.VerifyPKr(&h, &sign, &pkr)
+	if !v_ok {
+		t.FailNow()
+	}
+
+	v_ok_err := keys.VerifyPKr(&h, &sign, &pkr1)
+	if v_ok_err {
+		t.FailNow()
+	}
+}
+
+func TestMain(m *testing.M) {
+	cpt.ZeroInit(cpt.NET_Dev)
+	m.Run()
 }
