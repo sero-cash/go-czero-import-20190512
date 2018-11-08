@@ -161,6 +161,7 @@ extern char zero_input(
     unsigned long position,
     const unsigned char path[ZERO_PATH_DEPTH*32],
     //---out---
+    unsigned char asset_cm_ret[32],
     unsigned char ar_ret[32],
     unsigned char nil_ret[32],
     unsigned char til_ret[32],

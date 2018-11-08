@@ -275,6 +275,50 @@ func GenTil(tk *keys.Uint512, root_cm *keys.Uint256) (til keys.Uint256) {
 	return
 }
 
+type InputDesc struct {
+	//---in---
+	Seed  keys.Uint256
+	Pkr   keys.Uint512
+	Einfo [INFO_WIDTH]byte
+	//--
+	Index    uint64
+	Anchor   keys.Uint256
+	Position uint32
+	Path     [DEPTH * 32]byte
+	//---out---
+	Asset_cm_ret keys.Uint256
+	Ar_ret       keys.Uint256
+	Nil_ret      keys.Uint256
+	Til_ret      keys.Uint256
+	Proof_ret    [PROOF_WIDTH]byte
+}
+
+func GenInputProof(desc *InputDesc) (e error) {
+	ret := C.zero_input(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Seed[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--
+		C.ulong(desc.Index),
+		(*C.uchar)(unsafe.Pointer(&desc.Anchor[0])),
+		C.ulong(desc.Position),
+		(*C.uchar)(unsafe.Pointer(&desc.Path[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input desc error")
+		return
+	}
+}
+
 func GenDesc_Z(common *Common, pre *Pre, extra *Extra, out *Out, in *In, proof *Proof) (e error) {
 	/*
 		ret := C.zero_gen_desc_z(
