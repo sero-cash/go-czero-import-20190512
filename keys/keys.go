@@ -180,8 +180,7 @@ func CheckLICr(pkr *Uint512, licr *LICr) bool {
 	}
 }
 
-func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool) {
-	var R Uint256
+func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool, R Uint256) {
 	ret := C.zero_ismy_pkr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&tk[0])),

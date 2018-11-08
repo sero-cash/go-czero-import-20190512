@@ -118,6 +118,55 @@ extern char zero_output(
     unsigned char proof[ZERO_PROOF_WIDTH]
 );
 
+extern void zero_enc_info(
+    //---in---
+    const unsigned char rsk[32],
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char ar[32],
+    const unsigned char memo[64],
+    //---out---
+    unsigned char einfo_ret[ZERO_INFO_WIDTH],
+    unsigned char asset_cm[32]
+);
+
+extern void zero_dec_einfo(
+    //---in---
+    const unsigned char rsk[32],
+    const unsigned char einfo[ZERO_INFO_WIDTH],
+    //---out---
+    unsigned char tkn_currency_ret[32],
+    unsigned char tkn_value_ret[32],
+    unsigned char tkt_category_ret[32],
+    unsigned char tkt_value_ret[32],
+    unsigned char memo_ret[64],
+    unsigned char asset_cm_ret[32]
+);
+
+extern void zero_til(
+    const unsigned char tk[64],
+    const unsigned char root_cm[32],
+    unsigned char til[32]
+);
+
+extern char zero_input(
+    //---in---
+    const unsigned char seed[32],
+    const unsigned char pkr[64],
+    const unsigned char einfo[ZERO_INFO_WIDTH],
+    unsigned long index,
+    const unsigned char anchor[32],
+    unsigned long position,
+    const unsigned char path[ZERO_PATH_DEPTH*32],
+    //---out---
+    unsigned char ar_ret[32],
+    unsigned char nil_ret[32],
+    unsigned char til_ret[32],
+    unsigned char proof_ret[ZERO_PROOF_WIDTH]
+);
+
 /*
 extern void zero_sha256_one(const unsigned char* d,unsigned char* out);
 

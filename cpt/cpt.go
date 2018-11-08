@@ -24,6 +24,7 @@ package cpt
 import "C"
 import (
 	"errors"
+	"fmt"
 	"unsafe"
 
 	"github.com/sero-cash/go-czero-import/keys"
@@ -212,6 +213,66 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 		e = errors.New("gen output proof error")
 		return
 	}
+}
+
+type InfoDesc struct {
+	//---in---
+	Rsk   keys.Uint256
+	Einfo [INFO_WIDTH]byte
+	//---out---
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Ar           keys.Uint256
+	Memo         keys.Uint512
+	Asset_cm     keys.Uint256
+}
+
+func DecOutput(desc *InfoDesc, asset_cm *keys.Uint256) (e error) {
+	C.zero_dec_einfo(
+		//--in--
+		(*C.uchar)(unsafe.Pointer(&desc.Rsk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--out--
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm[0])),
+	)
+	if desc.Asset_cm != *asset_cm {
+		e = fmt.Errorf("Dec output but assertCM is not match")
+		return
+	} else {
+		return
+	}
+}
+
+func EncOutput(desc *InfoDesc) {
+	C.zero_enc_info(
+		//--in--
+		(*C.uchar)(unsafe.Pointer(&desc.Rsk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		//--out--
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm[0])),
+	)
+}
+
+func GenTil(tk *keys.Uint512, root_cm *keys.Uint256) (til keys.Uint256) {
+	C.zero_til(
+		(*C.uchar)(unsafe.Pointer(&tk[0])),
+		(*C.uchar)(unsafe.Pointer(&root_cm[0])),
+		(*C.uchar)(unsafe.Pointer(&til[0])),
+	)
+	return
 }
 
 func GenDesc_Z(common *Common, pre *Pre, extra *Extra, out *Out, in *In, proof *Proof) (e error) {
