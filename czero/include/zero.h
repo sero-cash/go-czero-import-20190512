@@ -76,9 +76,46 @@ extern char zero_base58_dec(const char* p,unsigned char* out,int len);
 
 
 extern void zero_merkle_combine(
-    const unsigned char* d0,
-    const unsigned char* d1,
-    unsigned char* out
+    const unsigned char d0[32],
+    const unsigned char d1[32],
+    unsigned char out[32]
+);
+
+
+extern void zero_out_commitment(
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char memo[ZERO_MEMO_WIDTH],
+    const unsigned char pkr[64],
+    const unsigned char ar[32],
+    unsigned char cm[32]
+);
+
+extern void zero_root_commitment(
+    unsigned long index,
+    const unsigned char out_cm[32],
+    unsigned char cm[32]
+);
+
+
+extern char zero_output(
+    //---in---
+    const unsigned char seed[32],
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char memo[64],
+    const unsigned char pk[64],
+    //---out---
+    unsigned char asset_cm_ret[32],
+    unsigned char ar_ret[32],
+    unsigned char out_cm_ret[32],
+    unsigned char einfo_ret[ZERO_INFO_WIDTH],
+    unsigned char pkr[64],
+    unsigned char proof[ZERO_PROOF_WIDTH]
 );
 
 /*

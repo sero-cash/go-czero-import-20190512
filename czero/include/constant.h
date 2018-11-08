@@ -13,6 +13,13 @@ enum {
     ZERO_PROOF_WIDTH=259,
     ZERO_MEMO_WIDTH=64,
     ZERO_EINFO_WIDTH=32*5,
+    ZERO_INFO_WIDTH=
+            32+ //currency
+            32+ //value
+            32+ //category
+            32+ //value
+            32+ //ar
+            64, //memo
     ZERO_LIC_WIDTH=64,
 };
 

@@ -136,17 +136,82 @@ type Common struct {
 	C        [2]keys.Uint256
 }
 
-func GenCommitment(currency *keys.Uint256, pkr *keys.Uint512, value *keys.Uint256, text *keys.Uint512) (ret keys.Uint256) {
-	/*
-		C.zero_gen_commitment(
-			(*C.uchar)(unsafe.Pointer(&currency[0])),
-			(*C.uchar)(unsafe.Pointer(&pkr[0])),
-			(*C.uchar)(unsafe.Pointer(&value[0])),
-			(*C.uchar)(unsafe.Pointer(&text[0])),
-			(*C.uchar)(unsafe.Pointer(&ret[0])),
-		)
-	*/
+func GenOutCM(
+	tkn_currency *keys.Uint256,
+	tkn_value *keys.Uint256,
+	tkt_category *keys.Uint256,
+	tkt_value *keys.Uint256,
+	memo *keys.Uint512,
+	pkr *keys.Uint512,
+	ar *keys.Uint256,
+) (cm keys.Uint256) {
+	C.zero_out_commitment(
+		(*C.uchar)(unsafe.Pointer(&tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&memo[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&ar[0])),
+		(*C.uchar)(unsafe.Pointer(&cm[0])),
+	)
 	return
+}
+
+func GenRootCM(
+	index uint64,
+	out_cm *keys.Uint256,
+) (cm keys.Uint256) {
+	C.zero_root_commitment(
+		C.ulong(index),
+		(*C.uchar)(unsafe.Pointer(&out_cm[0])),
+		(*C.uchar)(unsafe.Pointer(&cm[0])),
+	)
+	return
+}
+
+type OutputDesc struct {
+	//---in---
+	Seed         keys.Uint256
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Memo         keys.Uint512
+	Pk           keys.Uint512
+	//---out---
+	Asset_cm_ret keys.Uint256
+	Ar_ret       keys.Uint256
+	Out_cm_ret   keys.Uint256
+	Einfo_ret    [INFO_WIDTH]byte
+	Pkr_ret      keys.Uint512
+	Proof_ret    Proof
+}
+
+func GenOutputProof(desc *OutputDesc) (e error) {
+	ret := C.zero_output(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Seed[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pk[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Out_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret.G[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen output proof error")
+		return
+	}
 }
 
 func GenDesc_Z(common *Common, pre *Pre, extra *Extra, out *Out, in *In, proof *Proof) (e error) {

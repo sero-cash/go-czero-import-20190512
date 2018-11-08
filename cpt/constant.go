@@ -18,5 +18,8 @@ package cpt
 
 //Currency+Value+Ticket+rPK+Memo
 const ETEXT_WIDTH = 32 + 32 + 32 + 32 + 64
+
+//currency+value+category+value+ar+memo
+const INFO_WIDTH = 32 + 32 + 32 + 32 + 32 + 64
 const PROOF_WIDTH = 259
 const DEPTH = 18
