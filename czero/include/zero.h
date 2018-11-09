@@ -209,6 +209,20 @@ extern char zero_verify_balance(
     const unsigned char bsign[64]
 );
 
+extern char zero_output_verify(
+    const unsigned char asset_cm[32],
+    const unsigned char out_cm[32],
+    const unsigned char pkr[64],
+    const unsigned char proof[ZERO_PROOF_WIDTH]
+);
+
+extern char zero_input_verify(
+    const unsigned char asset_cm[32],
+    const unsigned char anchor[32],
+    const unsigned char nil[32],
+    const unsigned char proof[ZERO_PROOF_WIDTH]
+);
+
 
 #ifdef __cplusplus
 }

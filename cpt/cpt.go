@@ -23,9 +23,12 @@ package cpt
 */
 import "C"
 import (
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"unsafe"
+
+	"github.com/sero-cash/go-sero/crypto/sha3"
 
 	"github.com/sero-cash/go-czero-import/keys"
 )
@@ -126,8 +129,20 @@ type In struct {
 	Trace_ret  keys.Uint256
 }
 
-type Proof struct {
-	G [PROOF_WIDTH]byte
+type Proof [PROOF_WIDTH]byte
+
+func (b Proof) MarshalText() ([]byte, error) {
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
+}
+
+func (self *Proof) ToHash() (ret keys.Uint256) {
+	d := sha3.NewKeccak256()
+	d.Write(self[:])
+	copy(ret[:], d.Sum(nil))
+	return
 }
 
 type Common struct {
@@ -205,7 +220,7 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 		(*C.uchar)(unsafe.Pointer(&desc.Out_cm_ret[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Einfo_ret[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Pkr_ret[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret.G[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret[0])),
 	)
 	if ret == 0 {
 		return
@@ -400,4 +415,48 @@ func GenAssetCC(desc *AssetDesc) {
 		//--out--
 		(*C.uchar)(unsafe.Pointer(&desc.Asset_cc[0])),
 	)
+}
+
+type OutputVerifyDesc struct {
+	AssetCM keys.Uint256
+	OutCM   keys.Uint256
+	Pkr     keys.Uint512
+	Proof   Proof
+}
+
+func VerifyOutput(desc *OutputVerifyDesc) (e error) {
+	ret := C.zero_output_verify(
+		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.OutCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("verify output error")
+		return
+	}
+}
+
+type InputVerifyDesc struct {
+	AssetCM keys.Uint256
+	Anchor  keys.Uint256
+	Nil     keys.Uint256
+	Proof   Proof
+}
+
+func VerifyInput(desc *InputVerifyDesc) (e error) {
+	ret := C.zero_output_verify(
+		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Anchor[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("verify output error")
+		return
+	}
 }
