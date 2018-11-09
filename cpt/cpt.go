@@ -319,158 +319,85 @@ func GenInputProof(desc *InputDesc) (e error) {
 	}
 }
 
-func GenDesc_Z(common *Common, pre *Pre, extra *Extra, out *Out, in *In, proof *Proof) (e error) {
-	/*
-		ret := C.zero_gen_desc_z(
-			(*C.uchar)(unsafe.Pointer(&common.Seed[0])),
-			(*C.uchar)(unsafe.Pointer(&common.Hash_O[0])),
-			(*C.uchar)(unsafe.Pointer(&common.Currency[0])),
-			(*C.uchar)(unsafe.Pointer(&common.C[0][0])),
-			(*C.uchar)(unsafe.Pointer(&common.C[1][0])),
-			//-----pre----
-			C.uint(pre.I),
-			(*C.uchar)(unsafe.Pointer(&pre.R[0])),
-			(*C.uchar)(unsafe.Pointer(&pre.Z[0][0])),
-			(*C.uchar)(unsafe.Pointer(&pre.Z[1][0])),
-			//----extra----
-			(*C.uchar)(unsafe.Pointer(&extra.O[0][0])),
-			(*C.uchar)(unsafe.Pointer(&extra.O[1][0])),
-			C.uint(extra.I),
-			(*C.uchar)(unsafe.Pointer(&extra.Z[0][0])),
-			(*C.uchar)(unsafe.Pointer(&extra.Z[1][0])),
-			(*C.uchar)(unsafe.Pointer(&extra.R[0])),
-			(*C.uchar)(unsafe.Pointer(&extra.S1_ret[0])),
-			//----out-----
-			(*C.uchar)(unsafe.Pointer(&out.Addr[0])),
-			(*C.uchar)(unsafe.Pointer(&out.Value[0])),
-			(*C.uchar)(unsafe.Pointer(&out.Info[0])),
-			(*C.uchar)(unsafe.Pointer(&out.EText_ret[0])),
-			(*C.uchar)(unsafe.Pointer(&out.Commitment_ret[0])),
-			//----in----
-			(*C.uchar)(unsafe.Pointer(&in.EText[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Commitment[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Path[0])),
-			C.uint(in.Index),
-			(*C.uchar)(unsafe.Pointer(&in.S1[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Anchor[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Nil_ret[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Trace_ret[0])),
-			(*C.uchar)(unsafe.Pointer(&proof.G[0])),
-		)
-		if ret == 0 {
-			return
-		} else {
-			e = errors.New("gen desc z error")
-			return
-		}
-	*/
+type BalanceDesc struct {
+	Zin_acms  []byte
+	Zin_ars   []byte
+	Zout_acms []byte
+	Zout_ars  []byte
+	Oin_accs  []byte
+	Oout_accs []byte
+	Hash      keys.Uint256
+	Bcr       keys.Uint256
+	Bsign     keys.Uint512
+}
+
+func PtrOfSlice(s []byte) *C.uchar {
+	if len(s) > 0 {
+		return (*C.uchar)(unsafe.Pointer(&s[0]))
+	} else {
+		return (*C.uchar)(unsafe.Pointer(uintptr(0)))
+	}
+}
+
+func SignBalance(desc *BalanceDesc) {
+	C.zero_sign_balance(
+		C.int(len(desc.Zin_acms)/32),
+		PtrOfSlice(desc.Zin_acms),
+		PtrOfSlice(desc.Zin_ars),
+		C.int(len(desc.Zout_acms)/32),
+		PtrOfSlice(desc.Zout_acms),
+		PtrOfSlice(desc.Zout_ars),
+		C.int(len(desc.Oin_accs)/32),
+		PtrOfSlice(desc.Oin_accs),
+		C.int(len(desc.Oout_accs)/32),
+		PtrOfSlice(desc.Oout_accs),
+		(*C.uchar)(unsafe.Pointer(&desc.Hash[0])),
+		//---out--
+		(*C.uchar)(unsafe.Pointer(&desc.Bsign[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Bcr[0])),
+	)
 	return
 }
 
-type Info struct {
-	Currency keys.Uint256
-	Text     keys.Uint512
-	R        keys.Uint256
-	V        keys.Uint256 //U256
-	Trace    keys.Uint256
+func VerifyBalance(desc *BalanceDesc) (e error) {
+	ret := C.zero_verify_balance(
+		C.int(len(desc.Zin_acms)/32),
+		PtrOfSlice(desc.Zin_acms),
+		C.int(len(desc.Zout_acms)/32),
+		PtrOfSlice(desc.Zout_acms),
+		C.int(len(desc.Oin_accs)/32),
+		PtrOfSlice(desc.Oin_accs),
+		C.int(len(desc.Oout_accs)/32),
+		PtrOfSlice(desc.Oout_accs),
+		(*C.uchar)(unsafe.Pointer(&desc.Hash[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Bcr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Bsign[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("verify balance error")
+		return
+	}
 }
 
-func EncodeEInfo(tk *keys.Uint512, pkr *keys.Uint512, info *Info) (succ bool, einfo [ETEXT_WIDTH]byte, commitment keys.Uint256) {
-	/*
-		ret := C.zero_en_einfo(
-			(*C.uchar)(unsafe.Pointer(&pkr[0])),
-			(*C.uchar)(unsafe.Pointer(&tk[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Currency[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Text[0])),
-			(*C.uchar)(unsafe.Pointer(&info.V[0])),
-			(*C.uchar)(unsafe.Pointer(&einfo[0])),
-			(*C.uchar)(unsafe.Pointer(&info.R[0])),
-			(*C.uchar)(unsafe.Pointer(&commitment[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Trace[0])),
-		)
-		//fmt.Printf("\nr: ")
-		//r.LogOut()
-		//commitment.LogOut();
-
-		if ret == C.char(0) {
-			succ = true
-			return
-		} else {
-			succ = false
-			return
-		}
-	*/
-	return
+type AssetDesc struct {
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Ar           keys.Uint256
+	Asset_cc     keys.Uint256
+	Asset_cm     keys.Uint256
 }
 
-func DecodeEInfo(tk *keys.Uint512, einfo *[ETEXT_WIDTH]byte, s1 *keys.Uint256, commitment *keys.Uint256) (info Info, e error) {
-	/*
-		vsk := keys.Uint256{}
-		zpk := keys.Uint256{}
-		copy(vsk[:], tk[:32])
-		copy(zpk[:], tk[32:])
-		ret := C.zero_de_einfo(
-			(*C.uchar)(unsafe.Pointer(&vsk[0])),
-			(*C.uchar)(unsafe.Pointer(&zpk[0])),
-			(*C.uchar)(unsafe.Pointer(&einfo[0])),
-			(*C.uchar)(unsafe.Pointer(&s1[0])),
-			(*C.uchar)(unsafe.Pointer(&commitment[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Currency[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Text[0])),
-			(*C.uchar)(unsafe.Pointer(&info.R[0])),
-			(*C.uchar)(unsafe.Pointer(&info.V[0])),
-			(*C.uchar)(unsafe.Pointer(&info.Trace[0])),
-		)
-		if ret != C.char(0) {
-			e = errors.New("decode einfo error")
-			return
-		} else {
-			return
-		}
-	*/
-	return
-}
-
-type PreV struct {
-	I  uint32
-	S1 keys.Uint256
-}
-
-type ExtraV struct {
-	PreV
-	O [2]keys.Uint256 //I256
-}
-
-type OutV struct {
-	Commitment keys.Uint256
-}
-
-type InV struct {
-	Anchor keys.Uint256
-	Nil    keys.Uint256
-}
-
-func VerifyDesc_Z(hash_o *keys.Uint256, pre *PreV, extra *ExtraV, out *OutV, in *InV, proof *Proof) (e error) {
-	/*
-		ret := C.zero_verify_desc_z(
-			(*C.uchar)(unsafe.Pointer(&hash_o[0])),
-			C.uint(pre.I),
-			(*C.uchar)(unsafe.Pointer(&pre.S1[0])),
-			(*C.uchar)(unsafe.Pointer(&extra.O[0][0])),
-			(*C.uchar)(unsafe.Pointer(&extra.O[1][0])),
-			C.uint(extra.I),
-			(*C.uchar)(unsafe.Pointer(&extra.S1[0])),
-			(*C.uchar)(unsafe.Pointer(&out.Commitment[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Anchor[0])),
-			(*C.uchar)(unsafe.Pointer(&in.Nil[0])),
-			(*C.uchar)(unsafe.Pointer(&proof.G[0])),
-		)
-		if ret == 0 {
-			return
-		} else {
-			e = errors.New("verify desc z failed")
-			return
-		}
-	*/
-	return
+func GenAssetCC(desc *AssetDesc) {
+	C.zero_gen_asset_cc(
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		//--out--
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cc[0])),
+	)
 }

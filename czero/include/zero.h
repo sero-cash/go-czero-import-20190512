@@ -118,6 +118,15 @@ extern char zero_output(
     unsigned char proof[ZERO_PROOF_WIDTH]
 );
 
+extern void zero_gen_asset_cc(
+    //---in---
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    unsigned char asset_cc_ret[32]
+);
+
 extern void zero_enc_info(
     //---in---
     const unsigned char rsk[32],
@@ -129,7 +138,7 @@ extern void zero_enc_info(
     const unsigned char memo[64],
     //---out---
     unsigned char einfo_ret[ZERO_INFO_WIDTH],
-    unsigned char asset_cm[32]
+    unsigned char asset_cm_ret[32]
 );
 
 extern void zero_dec_einfo(
@@ -168,102 +177,38 @@ extern char zero_input(
     unsigned char proof_ret[ZERO_PROOF_WIDTH]
 );
 
-/*
-extern void zero_sha256_one(const unsigned char* d,unsigned char* out);
-
-extern void zero_sha256_two(const unsigned char* d0,const unsigned char* d1,unsigned char* out);
-
-extern void zero_gen_commitment(
-    const unsigned char currency[32],
-    const unsigned char pkr[64],
-    const unsigned char value[32],
-    const unsigned char text[64],
-    unsigned char commitment[32]
+extern void zero_sign_balance(
+    //---in---
+    int zin_size,
+    const unsigned char* zin_acms,
+    const unsigned char* zin_ars,
+    int zout_size,
+    const unsigned char* zout_acms,
+    const unsigned char* zout_ars,
+    int oin_size,
+    const unsigned char* oin_accs,
+    int oout_size,
+    const unsigned char* oout_accs,
+    const unsigned char hash[32],
+    //---out---
+    unsigned char bsign[64],
+    unsigned char bcr[32]
 );
 
-extern char zero_gen_desc_z(
-    const unsigned char seed[32],
-    const unsigned char hash_o[32],
-    const unsigned char currency[32],
-    const unsigned char c0[32],
-    const unsigned char c1[32],
-    //----pre---
-    unsigned int pre_i,
-    const unsigned char pre_r[32],
-    const unsigned char pre_zi_0[32],
-    const unsigned char pre_zi_1[32],
-    //----extra---
-    const unsigned char extra_o_0[32],
-    const unsigned char extra_o_1[32],
-    unsigned int extra_i,
-    const unsigned char extra_zo_0[32],
-    const unsigned char extra_zo_1[32],
-    const unsigned char extra_r[32],
-    unsigned char extra_s1_ret[32],
-    //----out----
-    const unsigned char out_addr[64],
-    const unsigned char out_value[32],
-    const unsigned char out_info[ZERO_MEMO_WIDTH],
-    unsigned char out_einfo_ret[ZERO_EINFO_WIDTH],
-    unsigned char out_commitment_ret[32],
-    //----in----
-    const unsigned char in_einfo[ZERO_EINFO_WIDTH],
-    const unsigned char in_commitment[32],
-    const unsigned char in_path[ZERO_PATH_DEPTH*32],
-    unsigned int in_index,
-    const unsigned char in_s1[32],
-    const unsigned char in_anchor[32],
-    unsigned char in_nil_ret[32],
-    unsigned char in_trace_ret[32],
-    //-----------
-    unsigned char proof[ZERO_PROOF_WIDTH]
+extern char zero_verify_balance(
+    int zin_size,
+    const unsigned char* zin_acms,
+    int zout_size,
+    const unsigned char* zout_acms,
+    int oin_size,
+    const unsigned char* oin_accs,
+    int oout_size,
+    const unsigned char* oout_accs,
+    const unsigned char hash[32],
+    const unsigned char bcr[32],
+    const unsigned char bsign[64]
 );
 
-
-extern char zero_en_einfo(
-    const unsigned char pkr[64],
-    const unsigned char tk[64],
-    const unsigned char currency[32],
-    const unsigned char text[64],
-    const unsigned char v[32],
-    unsigned char einfo[64*2],
-    unsigned char r[32],
-    unsigned char commitment[32],
-    unsigned char trace[32]
-);
-
-extern char zero_de_einfo(
-    const unsigned char vsk[32],
-    const unsigned char zpk[32],
-    const unsigned char einfo[ZERO_EINFO_WIDTH],
-    const unsigned char s1[32],
-    const unsigned char commitment[32],
-    unsigned char currency[32],
-    unsigned char text[64],
-    unsigned char r[32],
-    unsigned char v[32],
-    unsigned char trace[32]
-);
-
-extern char zero_verify_desc_z(
-    const unsigned char hash_o[32],
-    //----pre----
-    unsigned int pre_i,
-    const unsigned char pre_s1[32],
-    //----extra----
-    const unsigned char extra_o_0[32],
-    const unsigned char extra_o_1[32],
-    unsigned int extra_i,
-    const unsigned char extra_s1[32],
-    //----out----
-    const unsigned char out_commitment[32],
-    //----in----
-    const unsigned char in_anchor[32],
-    const unsigned char in_nil[32],
-    //----------
-    const unsigned char proof[ZERO_PROOF_WIDTH]
-);
-*/
 
 #ifdef __cplusplus
 }
