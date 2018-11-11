@@ -18,7 +18,7 @@ package cpt
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo darwin LDFLAGS: -L ../czero/lib -l czerod
+#cgo darwin LDFLAGS: -L ../czero/lib -l czero
 #include "zero.h"
 */
 import "C"
@@ -32,6 +32,10 @@ import (
 
 	"github.com/sero-cash/go-czero-import/keys"
 )
+
+func Is_czero_debug() bool {
+	return false
+}
 
 var init_chan = make(chan bool)
 
@@ -447,7 +451,7 @@ type InputVerifyDesc struct {
 }
 
 func VerifyInput(desc *InputVerifyDesc) (e error) {
-	ret := C.zero_output_verify(
+	ret := C.zero_input_verify(
 		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Anchor[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Nil[0])),

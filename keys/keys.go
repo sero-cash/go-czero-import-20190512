@@ -18,7 +18,7 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo darwin LDFLAGS: -L ../czero/lib -l czerod
+#cgo darwin LDFLAGS: -L ../czero/lib -l czero
 #include "zero.h"
 */
 import "C"
