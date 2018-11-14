@@ -29,8 +29,6 @@ import (
 	"errors"
 	"fmt"
 	"unsafe"
-
-	"github.com/sero-cash/go-czero-import/cpt"
 )
 
 type Uint256 [32]byte
@@ -166,7 +164,9 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 	return
 }
 
-type LICr [cpt.PROOF_WIDTH]byte
+const PROOF_WIDTH = 259
+
+type LICr [PROOF_WIDTH]byte
 
 func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
 	r := C.zero_pk2pkr_and_licr(
