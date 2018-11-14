@@ -20,7 +20,7 @@ enum {
             32+ //value
             32+ //ar
             64, //memo
-    ZERO_LIC_WIDTH=64,
+    ZERO_LIC_WIDTH=ZERO_PROOF_WIDTH,
 };
 
 #endif //LIBZERO_CONSTANT_H
