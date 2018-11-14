@@ -27,6 +27,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"unsafe"
 )
 
@@ -92,8 +93,19 @@ func (b Uint128) MarshalText() ([]byte, error) {
 
 func (b *Uint128) UnmarshalText(input []byte) error {
 	raw := input[2:]
-	_, err := hex.Decode(b[:], raw)
-	return err
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Uint128{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Uint128")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
 }
 
 func logBytes(bytes []byte) {
