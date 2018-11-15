@@ -18,7 +18,8 @@ package cpt
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo darwin LDFLAGS: -L ../czero/lib -l czero
+//#cgo darwin LDFLAGS: -L ../czero/lib -l czero
+#cgo LDFLAGS: -L ../czero/lib -l czero
 #include "zero.h"
 */
 import "C"
