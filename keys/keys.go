@@ -18,7 +18,7 @@ package keys
 
 /*
 #cgo CFLAGS: -I ../czero/include
-#cgo darwin LDFLAGS: -L ../czero/lib -l czero
+#cgo darwin LDFLAGS: -L ../czero/lib -l czerod
 #include "zero.h"
 */
 import "C"
@@ -164,7 +164,7 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 	return
 }
 
-const PROOF_WIDTH = 259
+const PROOF_WIDTH = 131
 
 type LICr [PROOF_WIDTH]byte
 
