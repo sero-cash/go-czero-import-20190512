@@ -21,7 +21,7 @@ package cpt
 //#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
 
 //#cgo darwin LDFLAGS: -L ../czero/lib -lczeros.DARWIN
-#cgo darwin LDFLAGS: -L ../czero/lib -lczerod.DARWIN
+#cgo darwin LDFLAGS: -L ../czero/lib -lczero.DARWIN
 
 #cgo linux LDFLAGS: -L ../czero/lib -l czero.LINUX
 
@@ -41,7 +41,7 @@ import (
 )
 
 func Is_czero_debug() bool {
-	return true
+	return false
 }
 
 var init_chan = make(chan bool)

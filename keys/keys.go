@@ -21,7 +21,7 @@ package keys
 //#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
 
 //#cgo darwin LDFLAGS: -L ../czero/lib -lczeros.DARWIN
-#cgo darwin LDFLAGS: -L ../czero/lib -lczerod.DARWIN
+#cgo darwin LDFLAGS: -L ../czero/lib -lczero.DARWIN
 
 #cgo linux LDFLAGS: -L ../czero/lib -lczero.LINUX
 
