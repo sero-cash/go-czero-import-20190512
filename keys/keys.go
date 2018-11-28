@@ -21,11 +21,11 @@ package keys
 //#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
 
 //#cgo darwin LDFLAGS: -L ../czero/lib -lczeros.DARWIN
-#cgo darwin LDFLAGS: -L ../czero/lib -lczero.DARWIN
+#cgo darwin LDFLAGS: -L ../czero/lib_DARWIN -lczero
 
-#cgo linux LDFLAGS: -L ../czero/lib -lczero.LINUX
+#cgo linux LDFLAGS: -L ../czero/lib_LINUX -lczero
 
-#cgo windows LDFLAGS: -L ../czero/lib -lczero.WINDOWS
+#cgo windows LDFLAGS: -L ../czero/lib_WINDOWS -lczero
 
 #include "zero.h"
 */

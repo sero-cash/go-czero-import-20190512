@@ -12,7 +12,6 @@ enum {
     ZERO_PATH_DEPTH=18,
     ZERO_PROOF_WIDTH=131,
     ZERO_MEMO_WIDTH=64,
-    ZERO_EINFO_WIDTH=32*5,
     ZERO_INFO_WIDTH=
             32+ //currency
             32+ //value

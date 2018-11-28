@@ -21,11 +21,11 @@ package cpt
 //#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
 
 //#cgo darwin LDFLAGS: -L ../czero/lib -lczeros.DARWIN
-#cgo darwin LDFLAGS: -L ../czero/lib -lczero.DARWIN
+#cgo darwin LDFLAGS: -L ../czero/lib_DARWIN -lczero
 
-#cgo linux LDFLAGS: -L ../czero/lib -l czero.LINUX
+#cgo linux LDFLAGS: -L ../czero/lib_LINUX -l czero
 
-#cgo windows LDFLAGS: -L ../czero/lib -l czero.WINDOWS
+#cgo windows LDFLAGS: -L ../czero/lib_WINDOWS -l czero
 #include "zero.h"
 */
 import "C"
@@ -54,9 +54,12 @@ const (
 	NET_Beta  NetType = 2
 )
 
-func ZeroInit(netType NetType) error {
+func ZeroInit(account_dir string, netType NetType) error {
 	go func() {
-		C.zero_init(C.uchar(netType))
+		C.zero_init(
+			(C.CString)(account_dir),
+			C.uchar(netType),
+		)
 		init_chan <- true
 	}()
 	<-init_chan
