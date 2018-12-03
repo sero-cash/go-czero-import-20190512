@@ -19,7 +19,8 @@ package keys
 /*
 #cgo CFLAGS: -I ../czero/include
 
-#cgo LDFLAGS: -L ../czero/lib -lczero
+#cgo LDFLAGS: -L ../czero/lib
+#cgo LDFLAGS: -lczero
 
 #include "zero.h"
 */
