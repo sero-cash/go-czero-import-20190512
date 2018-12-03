@@ -20,12 +20,9 @@ package cpt
 #cgo CFLAGS: -I ../czero/include
 //#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
 
-//#cgo darwin LDFLAGS: -L ../czero/lib -lczeros.DARWIN
-#cgo darwin LDFLAGS: -L ../czero/lib_DARWIN -lczero
 
-#cgo linux LDFLAGS: -L ../czero/lib_LINUX -l czero
+#cgo LDFLAGS: -L ../czero/lib -lczero
 
-#cgo windows LDFLAGS: -L ../czero/lib_WINDOWS -l czero
 #include "zero.h"
 */
 import "C"
