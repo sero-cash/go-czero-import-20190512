@@ -18,8 +18,6 @@ package cpt
 
 /*
 #cgo CFLAGS: -I ../czero/include
-//#cgo LDFLAGS: -lboost_filesystem -lboost_system -lstdc++ -lgmp -lgmpxx
-
 
 #cgo LDFLAGS: -L ../czero/lib -lczero
 
