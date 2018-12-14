@@ -80,6 +80,23 @@ func (b Uint256) MarshalText() ([]byte, error) {
 	return result, nil
 }
 
+func (b *Uint256) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Uint256{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Uint128")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
+}
+
 func (b Uint512) MarshalText() ([]byte, error) {
 	result := make([]byte, len(b)*2+2)
 	copy(result, `0x`)
