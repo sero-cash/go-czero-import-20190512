@@ -128,29 +128,27 @@ extern void zero_gen_asset_cc(
 
 extern void zero_enc_info(
     //---in---
-    const unsigned char rsk[32],
     const unsigned char tkn_currency[32],
     const unsigned char tkn_value[32],
     const unsigned char tkt_category[32],
     const unsigned char tkt_value[32],
-    const unsigned char ar[32],
+    const unsigned char rsk[32],
     const unsigned char memo[64],
     //---out---
-    unsigned char einfo_ret[ZERO_INFO_WIDTH],
-    unsigned char asset_cm_ret[32]
+    unsigned char einfo_ret[ZERO_INFO_WIDTH]
 );
 
 extern void zero_dec_einfo(
     //---in---
-    const unsigned char rsk[32],
+    const unsigned char tk[ZERO_TK_WIDTH],
+    const unsigned char rpk[32],
     const unsigned char einfo[ZERO_INFO_WIDTH],
     //---out---
     unsigned char tkn_currency_ret[32],
     unsigned char tkn_value_ret[32],
     unsigned char tkt_category_ret[32],
     unsigned char tkt_value_ret[32],
-    unsigned char memo_ret[64],
-    unsigned char asset_cm_ret[32]
+    unsigned char memo_ret[64]
 );
 
 extern void zero_til(
