@@ -21,48 +21,47 @@ extern void zero_log_bytes(const unsigned char* bytes,int len);
 
 extern void zero_seed2tk(
     const unsigned char seed[32],
-    unsigned char tk[64]
+    unsigned char tk[ZERO_TK_WIDTH]
 );
 
 extern void zero_seed2pk(
     const unsigned char seed[32],
-    unsigned char pk[64]
+    unsigned char pk[ZERO_PK_WIDTH]
 );
 
 extern void zero_pk2pkr(
-    const unsigned char pk[64],
+    const unsigned char pk[ZERO_PK_WIDTH],
     const unsigned char rnd[32],
-    unsigned char pkr[64]
+    unsigned char pkr[ZERO_PKr_WIDTH]
 );
 
 extern char zero_pk2pkr_and_licr(
-    const unsigned char pk[64],
-    unsigned char pkr[64],
+    const unsigned char pk[ZERO_PK_WIDTH],
+    unsigned char pkr[ZERO_PKr_WIDTH],
     unsigned char licr[ZERO_LIC_WIDTH]
 );
 
 extern char zero_check_licr(
-    const unsigned char pkr[64],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
     const unsigned char licr[ZERO_LIC_WIDTH]
 );
 
 extern char zero_ismy_pkr(
-    const unsigned char pkr[64],
-    const unsigned char tk[64],
-    unsigned char r[32]
+    const unsigned char pkr[ZERO_PKr_WIDTH],
+    const unsigned char tk[ZERO_TK_WIDTH]
 );
 
 extern void zero_sign_pkr(
     const unsigned char h[32],
     const unsigned char seed[32],
-    const unsigned char pkr[64],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
     unsigned char s[64]
 );
 
 extern char zero_verify_pkr(
     const unsigned char h[32],
     const unsigned char s[64],
-    const unsigned char pkr[64]
+    const unsigned char pkr[ZERO_PKr_WIDTH]
 );
 
 
@@ -88,8 +87,8 @@ extern void zero_out_commitment(
     const unsigned char tkt_category[32],
     const unsigned char tkt_value[32],
     const unsigned char memo[ZERO_MEMO_WIDTH],
-    const unsigned char pkr[64],
-    const unsigned char ar[32],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
+    const unsigned char rsk[32],
     unsigned char cm[32]
 );
 
@@ -108,14 +107,14 @@ extern char zero_output(
     const unsigned char tkt_category[32],
     const unsigned char tkt_value[32],
     const unsigned char memo[64],
-    const unsigned char pk[64],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
     //---out---
     unsigned char asset_cm_ret[32],
     unsigned char ar_ret[32],
     unsigned char out_cm_ret[32],
     unsigned char einfo_ret[ZERO_INFO_WIDTH],
-    unsigned char pkr[64],
-    unsigned char proof[ZERO_PROOF_WIDTH]
+    unsigned char sbase_ret[32],
+    unsigned char proof_ret[ZERO_PROOF_WIDTH]
 );
 
 extern void zero_gen_asset_cc(
@@ -155,7 +154,7 @@ extern void zero_dec_einfo(
 );
 
 extern void zero_til(
-    const unsigned char tk[64],
+    const unsigned char tk[ZERO_TK_WIDTH],
     const unsigned char root_cm[32],
     unsigned char til[32]
 );
@@ -163,7 +162,8 @@ extern void zero_til(
 extern char zero_input(
     //---in---
     const unsigned char seed[32],
-    const unsigned char pkr[64],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
+    const unsigned char sbase[32],
     const unsigned char einfo[ZERO_INFO_WIDTH],
     unsigned long index,
     const unsigned char anchor[32],
@@ -212,7 +212,7 @@ extern char zero_verify_balance(
 extern char zero_output_verify(
     const unsigned char asset_cm[32],
     const unsigned char out_cm[32],
-    const unsigned char pkr[64],
+    const unsigned char rpk[32],
     const unsigned char proof[ZERO_PROOF_WIDTH]
 );
 
