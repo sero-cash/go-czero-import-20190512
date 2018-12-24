@@ -41,6 +41,11 @@ extern char zero_pk2pkr_and_licr(
     unsigned char licr[ZERO_LIC_WIDTH]
 );
 
+extern void zero_hpkr(
+    const unsigned char pkr[ZERO_PKr_WIDTH],
+    unsigned char hpkr[ZERO_HPKr_WIDTH]
+);
+
 extern char zero_check_licr(
     const unsigned char pkr[ZERO_PKr_WIDTH],
     const unsigned char licr[ZERO_LIC_WIDTH]
@@ -128,6 +133,7 @@ extern void zero_gen_asset_cc(
 
 extern void zero_enc_info(
     //---in---
+    const unsigned char key[32],
     const unsigned char tkn_currency[32],
     const unsigned char tkn_value[32],
     const unsigned char tkt_category[32],
@@ -138,16 +144,23 @@ extern void zero_enc_info(
     unsigned char einfo_ret[ZERO_INFO_WIDTH]
 );
 
-extern void zero_dec_einfo(
-    //---in---
+
+extern void zero_fetch_key(
     const unsigned char tk[ZERO_TK_WIDTH],
     const unsigned char rpk[32],
+    const unsigned char key[32]
+);
+
+extern void zero_dec_einfo(
+    //---in---
+    const unsigned char key[32],
     const unsigned char einfo[ZERO_INFO_WIDTH],
     //---out---
     unsigned char tkn_currency_ret[32],
     unsigned char tkn_value_ret[32],
     unsigned char tkt_category_ret[32],
     unsigned char tkt_value_ret[32],
+    unsigned char rsk_ret[32],
     unsigned char memo_ret[64]
 );
 

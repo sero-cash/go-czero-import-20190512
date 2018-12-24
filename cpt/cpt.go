@@ -238,36 +238,9 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 	}
 }
 
-type InfoDesc struct {
-	//---in---
-	Tk    keys.Uint512
-	RPK   keys.Uint256
-	Einfo [INFO_WIDTH]byte
-	//---out---
-	Tkn_currency keys.Uint256
-	Tkn_value    keys.Uint256
-	Tkt_category keys.Uint256
-	Tkt_value    keys.Uint256
-	Memo         keys.Uint512
-}
-
-func DecOutput(desc *InfoDesc) {
-	C.zero_dec_einfo(
-		//--in--
-		(*C.uchar)(unsafe.Pointer(&desc.Tk[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
-		//--out--
-		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
-		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
-	)
-}
-
 type EncOutputInfo struct {
 	//---in---
+	Key          keys.Uint256
 	Tkn_currency keys.Uint256
 	Tkn_value    keys.Uint256
 	Tkt_category keys.Uint256
@@ -281,6 +254,7 @@ type EncOutputInfo struct {
 func EncOutput(desc *EncOutputInfo) {
 	C.zero_enc_info(
 		//--in--
+		(*C.uchar)(unsafe.Pointer(&desc.Key[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
@@ -289,6 +263,34 @@ func EncOutput(desc *EncOutputInfo) {
 		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
 		//--out--
 		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+	)
+}
+
+type InfoDesc struct {
+	//---in---
+	Key   keys.Uint256
+	Einfo [INFO_WIDTH]byte
+	//---out---
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Rsk          keys.Uint256
+	Memo         keys.Uint512
+}
+
+func DecOutput(desc *InfoDesc) {
+	C.zero_dec_einfo(
+		//--in--
+		(*C.uchar)(unsafe.Pointer(&desc.Key[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--out--
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Rsk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
 	)
 }
 

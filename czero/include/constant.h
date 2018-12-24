@@ -9,6 +9,7 @@
 #define LIBZERO_CONSTANT_H
 
 enum {
+    ZERO_HPKr_WIDTH=20,
     ZERO_PK_WIDTH=64,
     ZERO_TK_WIDTH=64,
     ZERO_PKr_WIDTH=96,

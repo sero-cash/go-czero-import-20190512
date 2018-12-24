@@ -30,8 +30,6 @@ import (
 	"crypto/rand"
 	"errors"
 	"unsafe"
-
-	"github.com/sero-cash/go-sero/crypto/sha3"
 )
 
 func logBytes(bytes []byte) {
@@ -91,10 +89,11 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr PKr) {
 	return
 }
 
-func HashPKr(pkr *PKr) (ret Uint256) {
-	d := sha3.NewKeccak256()
-	d.Write(pkr[:])
-	copy(ret[:], d.Sum(nil))
+func HashPKr(pkr *PKr) (ret [20]byte) {
+	C.zero_hpkr(
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&ret[0])),
+	)
 	return
 }
 
@@ -140,6 +139,15 @@ func IsMyPKr(tk *Uint512, pkr *PKr) (succ bool) {
 		succ = false
 		return
 	}
+}
+
+func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256) {
+	C.zero_fetch_key(
+		(*C.uchar)(unsafe.Pointer(&tk[0])),
+		(*C.uchar)(unsafe.Pointer(&rpk[0])),
+		(*C.uchar)(unsafe.Pointer(&ret[0])),
+	)
+	return
 }
 
 func SignPKr(seed *Uint256, data *Uint256, pkr *PKr) (sign Uint512, e error) {
