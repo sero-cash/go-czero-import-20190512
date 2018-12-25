@@ -235,6 +235,28 @@ extern char zero_input_verify(
 );
 
 
+extern char zero_pkg(
+    //---in---
+    const unsigned char key[32],
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char memo[64],
+    //---out---
+    unsigned char asset_cm_ret[32],
+    unsigned char ar_ret[32],
+    unsigned char pkg_cm_ret[32],
+    unsigned char einfo_ret[ZERO_INFO_WIDTH],
+    unsigned char proof_ret[ZERO_PROOF_WIDTH]
+);
+
+extern char zero_pkg_verify(
+    const unsigned char asset_cm[32],
+    const unsigned char pkg_cm[32],
+    const unsigned char proof[ZERO_PROOF_WIDTH]
+);
+
 #ifdef __cplusplus
 }
 #endif

@@ -416,7 +416,6 @@ type AssetDesc struct {
 	Tkn_value    keys.Uint256
 	Tkt_category keys.Uint256
 	Tkt_value    keys.Uint256
-	Ar           keys.Uint256
 	Asset_cc     keys.Uint256
 	Asset_cm     keys.Uint256
 }
@@ -472,6 +471,66 @@ func VerifyInput(desc *InputVerifyDesc) (e error) {
 		return
 	} else {
 		e = errors.New("verify output error")
+		return
+	}
+}
+
+type PkgDesc struct {
+	//---in---
+	Key          keys.Uint256
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Memo         keys.Uint512
+	//---out---
+	Asset_cm_ret keys.Uint256
+	Ar_ret       keys.Uint256
+	Pkg_cm_ret   keys.Uint256
+	Einfo_ret    [INFO_WIDTH]byte
+	Proof_ret    Proof
+}
+
+func GenPkgProof(desc *PkgDesc) (e error) {
+	ret := C.zero_pkg(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Key[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkg_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen pkg proof error")
+		return
+	}
+}
+
+type PkgVerifyDesc struct {
+	AssetCM keys.Uint256
+	PkgCM   keys.Uint256
+	Proof   Proof
+}
+
+func VerifyPkg(desc *PkgVerifyDesc) (e error) {
+	ret := C.zero_pkg_verify(
+		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.PkgCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("verify pkg error")
 		return
 	}
 }
