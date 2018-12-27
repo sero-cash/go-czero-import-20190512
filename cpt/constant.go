@@ -23,5 +23,4 @@ const ETEXT_WIDTH = 32 + 32 + 32 + 32 + 64
 const INFO_WIDTH = 32 + 32 + 32 + 32 + 32 + 64
 const PROOF_WIDTH = 131
 
-//const DEPTH = 18
-const DEPTH = 2
+const DEPTH = 29
