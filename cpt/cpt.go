@@ -194,6 +194,36 @@ func GenRootCM(
 	return
 }
 
+type ConfirmOutputDesc struct {
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Memo         keys.Uint512
+	Pkr          keys.PKr
+	Rsk          keys.Uint256
+	Out_cm       keys.Uint256
+}
+
+func ConfirmOutput(desc *ConfirmOutputDesc) (e error) {
+	ret := C.zero_output_confirm(
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Rsk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Out_cm[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("confirm output error")
+		return
+	}
+}
+
 type OutputDesc struct {
 	//---in---
 	Seed         keys.Uint256
@@ -471,6 +501,34 @@ func VerifyInput(desc *InputVerifyDesc) (e error) {
 		return
 	} else {
 		e = errors.New("verify output error")
+		return
+	}
+}
+
+type ConfirmPkgDesc struct {
+	Tkn_currency keys.Uint256
+	Tkn_value    keys.Uint256
+	Tkt_category keys.Uint256
+	Tkt_value    keys.Uint256
+	Memo         keys.Uint512
+	Ar_ret       keys.Uint256
+	Pkg_cm       keys.Uint256
+}
+
+func ConfirmPkg(desc *ConfirmPkgDesc) (e error) {
+	ret := C.zero_pkg_confirm(
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkg_cm[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("confirm pkg error")
 		return
 	}
 }

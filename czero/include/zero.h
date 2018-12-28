@@ -257,6 +257,28 @@ extern char zero_pkg_verify(
     const unsigned char proof[ZERO_PROOF_WIDTH]
 );
 
+extern char zero_output_confirm(
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char memo[64],
+    const unsigned char pkr[96],
+    const unsigned char rsk[64],
+    const unsigned char out_cm[32]
+);
+
+extern char zero_pkg_confirm(
+    const unsigned char tkn_currency[32],
+    const unsigned char tkn_value[32],
+    const unsigned char tkt_category[32],
+    const unsigned char tkt_value[32],
+    const unsigned char memo[64],
+    const unsigned char ar[32],
+    const unsigned char pkg_cm[32]
+);
+
+
 #ifdef __cplusplus
 }
 #endif
