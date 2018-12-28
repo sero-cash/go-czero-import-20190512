@@ -3,9 +3,21 @@ package keys
 import (
 	"encoding/hex"
 	"fmt"
+	"math/big"
 )
 
 type Uint256 [32]byte
+
+func Uint64_To_Uint256(v uint64) (ret Uint256) {
+	bys := big.NewInt(0).SetUint64(v).Bytes()
+	l := len(ret)
+	copy(ret[l-len(bys):], bys)
+	return
+}
+func Uint256_To_Uint64(v *Uint256) (ret uint64) {
+	ret = big.NewInt(0).SetBytes(v[:]).Uint64()
+	return
+}
 
 func Seeds2Tks(seeds []Uint256) (tks []Uint512) {
 	for _, seed := range seeds {
