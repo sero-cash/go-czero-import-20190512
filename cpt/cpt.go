@@ -19,7 +19,7 @@ package cpt
 /*
 #cgo CFLAGS: -I ../czero/include
 
-#cgo LDFLAGS: -L ../czero/lib -lczero
+#cgo LDFLAGS: -L ../czero/lib -lczerod
 
 #include "zero.h"
 */
@@ -35,7 +35,7 @@ import (
 )
 
 func Is_czero_debug() bool {
-	return false
+	return true
 }
 
 var init_chan = make(chan bool)
