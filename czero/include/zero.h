@@ -283,12 +283,8 @@ extern char zero_input_s(
     const unsigned char ehash[32],
     const unsigned char seed[32],
     const unsigned char pkr[ZERO_PKr_WIDTH],
-    const unsigned char sbase[32],
-    const unsigned char einfo[ZERO_INFO_WIDTH],
-    unsigned long index,
+    const unsigned char root_cm[32],
     //---out---
-    unsigned char asset_cm_ret[32],
-    unsigned char ar_ret[32],
     unsigned char nil_ret[32],
     unsigned char til_ret[32],
     unsigned char sign_ret[64]
