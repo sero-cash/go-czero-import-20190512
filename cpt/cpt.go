@@ -19,7 +19,7 @@ package cpt
 /*
 #cgo CFLAGS: -I ../czero/include
 
-#cgo LDFLAGS: -L ../czero/lib -lczero
+#cgo LDFLAGS: -L ../czero/lib -lczerod
 
 #include "zero.h"
 */
@@ -35,7 +35,7 @@ import (
 )
 
 func Is_czero_debug() bool {
-	return false
+	return true
 }
 
 var init_chan = make(chan bool)
@@ -649,4 +649,22 @@ func VerifyInputS(desc *VerifyInputSDesc) (e error) {
 		e = errors.New("gen input desc error")
 		return
 	}
+}
+
+func Miner_Hash_0(in []byte) []byte {
+	var bs [64]byte
+	C.zero_hash_0(
+		(*C.uchar)(unsafe.Pointer(&in[0])),
+		(*C.uchar)(unsafe.Pointer(&bs[0])),
+	)
+	return bs[:]
+}
+
+func Miner_Hash_1(in []byte) []byte {
+	var bs [32]byte
+	C.zero_hash_1(
+		(*C.uchar)(unsafe.Pointer(&in[0])),
+		(*C.uchar)(unsafe.Pointer(&bs[0])),
+	)
+	return bs[:]
 }

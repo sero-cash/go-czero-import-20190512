@@ -299,6 +299,19 @@ extern char zero_verify_input_s(
     const unsigned char sign[64]
 );
 
+extern char zero_pkr_valid(
+    const unsigned char pkr[ZERO_PKr_WIDTH]
+);
+
+extern void zero_hash_0(
+    const unsigned char in[40],
+    const unsigned char out[64]
+);
+
+extern void zero_hash_1(
+    const unsigned char in[96],
+    const unsigned char out[32]
+);
 
 #ifdef __cplusplus
 }

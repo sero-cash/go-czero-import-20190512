@@ -20,7 +20,7 @@ package keys
 #cgo CFLAGS: -I ../czero/include
 
 #cgo LDFLAGS: -L ../czero/lib
-#cgo LDFLAGS: -lczero
+#cgo LDFLAGS: -lczerod
 
 #include "zero.h"
 */
@@ -169,6 +169,17 @@ func VerifyPKr(data *Uint256, sign *Uint512, pkr *PKr) bool {
 	ret := C.zero_verify_pkr(
 		(*C.uchar)(unsafe.Pointer(&data[0])),
 		(*C.uchar)(unsafe.Pointer(&sign[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+	)
+	if ret == C.char(0) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func PKrValid(pkr *PKr) bool {
+	ret := C.zero_pkr_valid(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 	)
 	if ret == C.char(0) {
