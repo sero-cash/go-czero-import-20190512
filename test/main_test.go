@@ -50,7 +50,7 @@ func TestKeys(t *testing.T) {
 
 	r := cpt.Random()
 	pkr := keys.Addr2PKr(&pk, &r)
-	is_my_pkr, _ := keys.IsMyPKr(&tk, &pkr)
+	is_my_pkr := keys.IsMyPKr(&tk, &pkr)
 	if !is_my_pkr {
 		t.FailNow()
 	}
@@ -59,11 +59,11 @@ func TestKeys(t *testing.T) {
 	pk1 := keys.Seed2Addr(&seed1)
 	tk1 := keys.Seed2Tk(&seed1)
 	pkr1 := keys.Addr2PKr(&pk1, &r)
-	is_my_pkr, _ = keys.IsMyPKr(&tk1, &pkr1)
+	is_my_pkr = keys.IsMyPKr(&tk1, &pkr1)
 	if !is_my_pkr {
 		t.FailNow()
 	}
-	is_my_pkr_err, _ := keys.IsMyPKr(&tk, &pkr1)
+	is_my_pkr_err := keys.IsMyPKr(&tk, &pkr1)
 	if is_my_pkr_err {
 		t.FailNow()
 	}

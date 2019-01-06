@@ -28,88 +28,9 @@ import "C"
 
 import (
 	"crypto/rand"
-	"encoding/hex"
 	"errors"
-	"fmt"
 	"unsafe"
 )
-
-type Uint256 [32]byte
-type Uint512 [64]byte
-type Uint128 [16]byte
-
-func Seeds2Tks(seeds []Uint256) (tks []Uint512) {
-	for _, seed := range seeds {
-		tks = append(tks, Seed2Tk(&seed))
-	}
-	return
-}
-
-func (b *Uint128) ToUint256() (ret Uint256) {
-	copy(ret[:], b[:])
-	return
-}
-
-var Empty_Uint256 = Uint256{}
-var Empty_Uint512 = Uint512{}
-
-func (self Uint256) NewRef() (ret *Uint256) {
-	ret = &Uint256{}
-	copy(ret[:], self[:])
-	return ret
-}
-
-func (self Uint256) LogOut() {
-	logBytes(self[:])
-}
-
-func (self Uint512) NewRef() (ret *Uint512) {
-	ret = &Uint512{}
-	copy(ret[:], self[:])
-	return ret
-}
-
-func (self Uint512) LogOut() {
-	logBytes(self[:])
-}
-
-func (b Uint256) MarshalText() ([]byte, error) {
-	result := make([]byte, len(b)*2+2)
-	copy(result, `0x`)
-	hex.Encode(result[2:], b[:])
-	return result, nil
-}
-
-func (b Uint512) MarshalText() ([]byte, error) {
-	result := make([]byte, len(b)*2+2)
-	copy(result, `0x`)
-	hex.Encode(result[2:], b[:])
-	return result, nil
-}
-
-func (b Uint128) MarshalText() ([]byte, error) {
-	result := make([]byte, len(b)*2+2)
-	copy(result, `0x`)
-	hex.Encode(result[2:], b[:])
-	return result, nil
-}
-
-func (b *Uint128) UnmarshalText(input []byte) error {
-	raw := input[2:]
-	if len(raw) == 0 {
-		return nil
-	}
-	dec := Uint128{}
-	if len(raw)/2 != len(dec[:]) {
-		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Uint128")
-	}
-	if _, err := hex.Decode(dec[:], raw); err != nil {
-		return err
-	} else {
-		*b = dec
-	}
-	return nil
-}
 
 func logBytes(bytes []byte) {
 	C.zero_log_bytes(
@@ -150,7 +71,7 @@ func RandUint128() (hash Uint128) {
 	return
 }
 
-func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
+func Addr2PKr(addr *Uint512, r *Uint256) (pkr PKr) {
 	if r == nil {
 		t := RandUint256()
 		r = &t
@@ -159,6 +80,7 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 			panic("gen pkr, but r is empty")
 		}
 	}
+
 	C.zero_pk2pkr(
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&r[0])),
@@ -167,11 +89,19 @@ func Addr2PKr(addr *Uint512, r *Uint256) (pkr Uint512) {
 	return
 }
 
+func HashPKr(pkr *PKr) (ret [20]byte) {
+	C.zero_hpkr(
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&ret[0])),
+	)
+	return
+}
+
 const PROOF_WIDTH = 131
 
 type LICr [PROOF_WIDTH]byte
 
-func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
+func Addr2PKrAndLICr(addr *Uint512) (pkr PKr, licr LICr, ret bool) {
 	r := C.zero_pk2pkr_and_licr(
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
@@ -185,7 +115,7 @@ func Addr2PKrAndLICr(addr *Uint512) (pkr Uint512, licr LICr, ret bool) {
 	return
 }
 
-func CheckLICr(pkr *Uint512, licr *LICr) bool {
+func CheckLICr(pkr *PKr, licr *LICr) bool {
 	r := C.zero_check_licr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&licr[0])),
@@ -197,11 +127,10 @@ func CheckLICr(pkr *Uint512, licr *LICr) bool {
 	}
 }
 
-func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool, R Uint256) {
+func IsMyPKr(tk *Uint512, pkr *PKr) (succ bool) {
 	ret := C.zero_ismy_pkr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&tk[0])),
-		(*C.uchar)(unsafe.Pointer(&R[0])),
 	)
 	if ret == C.char(0) {
 		succ = true
@@ -212,7 +141,16 @@ func IsMyPKr(tk *Uint512, pkr *Uint512) (succ bool, R Uint256) {
 	}
 }
 
-func SignPKr(seed *Uint256, data *Uint256, pkr *Uint512) (sign Uint512, e error) {
+func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256) {
+	C.zero_fetch_key(
+		(*C.uchar)(unsafe.Pointer(&tk[0])),
+		(*C.uchar)(unsafe.Pointer(&rpk[0])),
+		(*C.uchar)(unsafe.Pointer(&ret[0])),
+	)
+	return
+}
+
+func SignPKr(seed *Uint256, data *Uint256, pkr *PKr) (sign Uint512, e error) {
 	C.zero_sign_pkr(
 		(*C.uchar)(unsafe.Pointer(&data[0])),
 		(*C.uchar)(unsafe.Pointer(&seed[0])),
@@ -227,10 +165,21 @@ func SignPKr(seed *Uint256, data *Uint256, pkr *Uint512) (sign Uint512, e error)
 	}
 }
 
-func VerifyPKr(data *Uint256, sign *Uint512, pkr *Uint512) bool {
+func VerifyPKr(data *Uint256, sign *Uint512, pkr *PKr) bool {
 	ret := C.zero_verify_pkr(
 		(*C.uchar)(unsafe.Pointer(&data[0])),
 		(*C.uchar)(unsafe.Pointer(&sign[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+	)
+	if ret == C.char(0) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func PKrValid(pkr *PKr) bool {
+	ret := C.zero_pkr_valid(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 	)
 	if ret == C.char(0) {
