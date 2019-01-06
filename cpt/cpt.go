@@ -592,3 +592,71 @@ func VerifyPkg(desc *PkgVerifyDesc) (e error) {
 		return
 	}
 }
+
+type InputSDesc struct {
+	//---in---
+	Ehash keys.Uint256
+	Seed  keys.Uint256
+	Pkr   keys.PKr
+	RPK   keys.Uint256
+	Einfo [INFO_WIDTH]byte
+	//--
+	Index uint64
+	//---out---
+	Asset_cm_ret keys.Uint256
+	Ar_ret       keys.Uint256
+	Nil_ret      keys.Uint256
+	Til_ret      keys.Uint256
+	Sign_ret     keys.Uint512
+}
+
+func GenInputSProof(desc *InputSDesc) (e error) {
+	ret := C.zero_input_s(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Ehash[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Seed[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--
+		C.ulong(desc.Index),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sign_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input s desc error")
+		return
+	}
+}
+
+type VerifyInputSDesc struct {
+	//---in---
+	Ehash  keys.Uint256
+	RootCM keys.Uint256
+	Pkr    keys.PKr
+	Nil    keys.Uint256
+	Sign   keys.Uint512
+}
+
+func VerifyInputS(desc *VerifyInputSDesc) (e error) {
+	ret := C.zero_verify_input_s(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Ehash[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RootCM[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sign[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input desc error")
+		return
+	}
+}
