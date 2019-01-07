@@ -36,9 +36,15 @@ extern void zero_pk2pkr(
 );
 
 extern char zero_pk2pkr_and_licr(
+    //---in---
     const unsigned char pk[ZERO_PK_WIDTH],
     unsigned char pkr[ZERO_PKr_WIDTH],
-    unsigned char licr[ZERO_LIC_WIDTH]
+    unsigned int height,
+    //---out---
+    unsigned int *counteract_ret,
+    unsigned int *limit_l_ret,
+    unsigned int *limit_h_ret,
+    unsigned char licr_ret[ZERO_LIC_WIDTH]
 );
 
 extern void zero_hpkr(
@@ -48,7 +54,11 @@ extern void zero_hpkr(
 
 extern char zero_check_licr(
     const unsigned char pkr[ZERO_PKr_WIDTH],
-    const unsigned char licr[ZERO_LIC_WIDTH]
+    const unsigned char licr[ZERO_LIC_WIDTH],
+    unsigned int counteract,
+    unsigned int limit_l,
+    unsigned int limit_h,
+    unsigned int height
 );
 
 extern char zero_ismy_pkr(

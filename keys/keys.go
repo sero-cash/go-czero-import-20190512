@@ -99,13 +99,24 @@ func HashPKr(pkr *PKr) (ret [20]byte) {
 
 const PROOF_WIDTH = 131
 
-type LICr [PROOF_WIDTH]byte
+type LICr struct {
+	Proof [PROOF_WIDTH]byte
+	C     uint64
+	L     uint64
+	H     uint64
+}
 
-func Addr2PKrAndLICr(addr *Uint512) (pkr PKr, licr LICr, ret bool) {
+func Addr2PKrAndLICr(addr *Uint512, height uint64) (pkr PKr, licr LICr, ret bool) {
 	r := C.zero_pk2pkr_and_licr(
+		//---in---
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
-		(*C.uchar)(unsafe.Pointer(&licr[0])),
+		C.uint(height),
+		//---out--
+		(*C.uint)(unsafe.Pointer(&licr.C)),
+		(*C.uint)(unsafe.Pointer(&licr.L)),
+		(*C.uint)(unsafe.Pointer(&licr.H)),
+		(*C.uchar)(unsafe.Pointer(&licr.Proof[0])),
 	)
 	if r == C.char(0) {
 		ret = true
@@ -115,10 +126,14 @@ func Addr2PKrAndLICr(addr *Uint512) (pkr PKr, licr LICr, ret bool) {
 	return
 }
 
-func CheckLICr(pkr *PKr, licr *LICr) bool {
+func CheckLICr(pkr *PKr, licr *LICr, height uint64) bool {
 	r := C.zero_check_licr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
-		(*C.uchar)(unsafe.Pointer(&licr[0])),
+		(*C.uchar)(unsafe.Pointer(&licr.Proof[0])),
+		(C.uint)(licr.C),
+		(C.uint)(licr.L),
+		(C.uint)(licr.H),
+		(C.uint)(height),
 	)
 	if r == C.char(0) {
 		return true
@@ -127,12 +142,8 @@ func CheckLICr(pkr *PKr, licr *LICr) bool {
 	}
 }
 
-func (self *LICr) GetCounteract() uint64 {
-	return 0
-}
-
-func (self *LICr) GetLimit() uint64 {
-	return 0
+func (self *LICr) GetProp() (counteract uint64, limit uint64) {
+	return 0, 0
 }
 
 func IsMyPKr(tk *Uint512, pkr *PKr) (succ bool) {
