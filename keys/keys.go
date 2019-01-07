@@ -127,6 +127,14 @@ func CheckLICr(pkr *PKr, licr *LICr) bool {
 	}
 }
 
+func (self *LICr) GetCounteract() uint64 {
+	return 0
+}
+
+func (self *LICr) GetLimit() uint64 {
+	return 0
+}
+
 func IsMyPKr(tk *Uint512, pkr *PKr) (succ bool) {
 	ret := C.zero_ismy_pkr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
