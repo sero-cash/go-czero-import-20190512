@@ -39,11 +39,11 @@ extern char zero_pk2pkr_and_licr(
     //---in---
     const unsigned char pk[ZERO_PK_WIDTH],
     unsigned char pkr[ZERO_PKr_WIDTH],
-    unsigned int height,
+    unsigned long height,
     //---out---
-    unsigned int *counteract_ret,
-    unsigned int *limit_l_ret,
-    unsigned int *limit_h_ret,
+    unsigned long *counteract_ret,
+    unsigned long *limit_l_ret,
+    unsigned long *limit_h_ret,
     unsigned char licr_ret[ZERO_LIC_WIDTH]
 );
 
@@ -55,10 +55,10 @@ extern void zero_hpkr(
 extern char zero_check_licr(
     const unsigned char pkr[ZERO_PKr_WIDTH],
     const unsigned char licr[ZERO_LIC_WIDTH],
-    unsigned int counteract,
-    unsigned int limit_l,
-    unsigned int limit_h,
-    unsigned int height
+    unsigned long counteract,
+    unsigned long limit_l,
+    unsigned long limit_h,
+    unsigned long height
 );
 
 extern char zero_ismy_pkr(

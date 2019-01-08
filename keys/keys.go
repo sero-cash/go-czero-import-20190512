@@ -111,11 +111,11 @@ func Addr2PKrAndLICr(addr *Uint512, height uint64) (pkr PKr, licr LICr, ret bool
 		//---in---
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
-		C.uint(height),
+		C.ulong(height),
 		//---out--
-		(*C.uint)(unsafe.Pointer(&licr.C)),
-		(*C.uint)(unsafe.Pointer(&licr.L)),
-		(*C.uint)(unsafe.Pointer(&licr.H)),
+		(*C.ulong)(unsafe.Pointer(&licr.C)),
+		(*C.ulong)(unsafe.Pointer(&licr.L)),
+		(*C.ulong)(unsafe.Pointer(&licr.H)),
 		(*C.uchar)(unsafe.Pointer(&licr.Proof[0])),
 	)
 	if r == C.char(0) {
@@ -127,13 +127,16 @@ func Addr2PKrAndLICr(addr *Uint512, height uint64) (pkr PKr, licr LICr, ret bool
 }
 
 func CheckLICr(pkr *PKr, licr *LICr, height uint64) bool {
+	if !PKrValid(pkr) {
+		return false
+	}
 	r := C.zero_check_licr(
 		(*C.uchar)(unsafe.Pointer(&pkr[0])),
 		(*C.uchar)(unsafe.Pointer(&licr.Proof[0])),
-		(C.uint)(licr.C),
-		(C.uint)(licr.L),
-		(C.uint)(licr.H),
-		(C.uint)(height),
+		(C.ulong)(licr.C),
+		(C.ulong)(licr.L),
+		(C.ulong)(licr.H),
+		(C.ulong)(height),
 	)
 	if r == C.char(0) {
 		return true
