@@ -651,20 +651,36 @@ func VerifyInputS(desc *VerifyInputSDesc) (e error) {
 	}
 }
 
-func Miner_Hash_0(in []byte) []byte {
+const SIP1 = 130000
+
+func Miner_Hash_0(in []byte, num uint64) []byte {
 	var bs [64]byte
-	C.zero_hash_0(
-		(*C.uchar)(unsafe.Pointer(&in[0])),
-		(*C.uchar)(unsafe.Pointer(&bs[0])),
-	)
+	if num < SIP1 {
+		C.zero_hash_0(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	} else {
+		C.zero_hash_2(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	}
 	return bs[:]
 }
 
-func Miner_Hash_1(in []byte) []byte {
+func Miner_Hash_1(in []byte, num uint64) []byte {
 	var bs [32]byte
-	C.zero_hash_1(
-		(*C.uchar)(unsafe.Pointer(&in[0])),
-		(*C.uchar)(unsafe.Pointer(&bs[0])),
-	)
+	if num < SIP1 {
+		C.zero_hash_1(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	} else {
+		C.zero_hash_3(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	}
 	return bs[:]
 }
