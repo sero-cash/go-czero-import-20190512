@@ -323,6 +323,16 @@ extern void zero_hash_1(
     const unsigned char out[32]
 );
 
+extern void zero_hash_2(
+    const unsigned char in[40],
+    const unsigned char out[64]
+);
+
+extern void zero_hash_3(
+    const unsigned char in[96],
+    const unsigned char out[32]
+);
+
 #ifdef __cplusplus
 }
 #endif
