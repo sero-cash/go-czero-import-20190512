@@ -31,10 +31,6 @@ extern void zero_seed2pk(
     unsigned char pk[ZERO_PK_WIDTH]
 );
 
-extern char zero_is_pk_valid(
-    const unsigned char pk[ZERO_PK_WIDTH]
-);
-
 extern void zero_pk2pkr(
     const unsigned char pk[ZERO_PK_WIDTH],
     const unsigned char rnd[32],
@@ -320,6 +316,11 @@ extern char zero_verify_input_s(
 extern char zero_pkr_valid(
     const unsigned char pkr[ZERO_PKr_WIDTH]
 );
+
+extern char zero_pk_valid(
+    const unsigned char pk[ZERO_PK_WIDTH]
+);
+
 
 extern void zero_hash_0(
     const unsigned char in[40],
