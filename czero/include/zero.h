@@ -15,6 +15,7 @@ extern "C" {
 
 #include "constant.h"
 
+
 extern void zero_init(const char* account_dir,const unsigned char nettype);
 
 extern void zero_log_bytes(const unsigned char* bytes,int len);
@@ -27,6 +28,10 @@ extern void zero_seed2tk(
 extern void zero_seed2pk(
     const unsigned char seed[32],
     unsigned char pk[ZERO_PK_WIDTH]
+);
+
+extern char zero_is_pk_valid(
+    const unsigned char pk[ZERO_PK_WIDTH]
 );
 
 extern void zero_pk2pkr(
@@ -123,6 +128,7 @@ extern char zero_output(
     const unsigned char tkt_value[32],
     const unsigned char memo[64],
     const unsigned char pkr[ZERO_PKr_WIDTH],
+    unsigned long height,
     //---out---
     unsigned char asset_cm_ret[32],
     unsigned char ar_ret[32],
@@ -155,7 +161,7 @@ extern void zero_enc_info(
 );
 
 
-extern void zero_fetch_key(
+extern char zero_fetch_key(
     const unsigned char tk[ZERO_TK_WIDTH],
     const unsigned char rpk[32],
     const unsigned char key[32]
@@ -164,6 +170,7 @@ extern void zero_fetch_key(
 extern void zero_dec_einfo(
     //---in---
     const unsigned char key[32],
+    char flag,
     const unsigned char einfo[ZERO_INFO_WIDTH],
     //---out---
     unsigned char tkn_currency_ret[32],

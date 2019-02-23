@@ -17,11 +17,13 @@
 package cpt
 
 /*
+
 #cgo CFLAGS: -I ../czero/include
 
 #cgo LDFLAGS: -L ../czero/lib -lczero
 
 #include "zero.h"
+
 */
 import "C"
 import (
@@ -233,6 +235,7 @@ type OutputDesc struct {
 	Tkt_value    keys.Uint256
 	Memo         keys.Uint512
 	Pkr          keys.PKr
+	Height       uint64
 	//---out---
 	Asset_cm_ret keys.Uint256
 	Ar_ret       keys.Uint256
@@ -252,6 +255,7 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		C.ulong(desc.Height),
 		//---out---
 		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
@@ -299,6 +303,7 @@ func EncOutput(desc *EncOutputInfo) {
 type InfoDesc struct {
 	//---in---
 	Key   keys.Uint256
+	Flag  bool
 	Einfo [INFO_WIDTH]byte
 	//---out---
 	Tkn_currency keys.Uint256
@@ -310,9 +315,14 @@ type InfoDesc struct {
 }
 
 func DecOutput(desc *InfoDesc) {
+	flag := C.char(0)
+	if desc.Flag {
+		flag = C.char(1)
+	}
 	C.zero_dec_einfo(
 		//--in--
 		(*C.uchar)(unsafe.Pointer(&desc.Key[0])),
+		flag,
 		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
 		//--out--
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
