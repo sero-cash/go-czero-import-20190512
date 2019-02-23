@@ -20,7 +20,7 @@ package keys
 #cgo CFLAGS: -I ../czero/include
 
 #cgo LDFLAGS: -L ../czero/lib
-#cgo LDFLAGS: -lczero
+#cgo LDFLAGS: -lczerod
 
 #include "zero.h"
 */
@@ -54,6 +54,18 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 	)
 	return
+}
+
+func IsPKValid(pk *Uint512) bool {
+	ret := C.zero_is_pk_valid(
+		(*C.uchar)(unsafe.Pointer(&pk[0])),
+	)
+
+	if ret == C.char(0) {
+		return true
+	} else {
+		return false
+	}
 }
 
 func RandUint512() (hash Uint512) {
