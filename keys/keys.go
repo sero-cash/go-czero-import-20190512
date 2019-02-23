@@ -56,6 +56,18 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 	return
 }
 
+func IsPKValid(pk *Uint512) bool {
+	ret := C.zero_pk_valid(
+		(*C.uchar)(unsafe.Pointer(&pk[0])),
+	)
+
+	if ret == C.char(0) {
+		return true
+	} else {
+		return false
+	}
+}
+
 func RandUint512() (hash Uint512) {
 	rand.Read(hash[:])
 	return
@@ -163,12 +175,17 @@ func IsMyPKr(tk *Uint512, pkr *PKr) (succ bool) {
 	}
 }
 
-func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256) {
-	C.zero_fetch_key(
+func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256, flag bool) {
+	f := C.zero_fetch_key(
 		(*C.uchar)(unsafe.Pointer(&tk[0])),
 		(*C.uchar)(unsafe.Pointer(&rpk[0])),
 		(*C.uchar)(unsafe.Pointer(&ret[0])),
 	)
+	if f == C.char(0) {
+		flag = false
+	} else {
+		flag = true
+	}
 	return
 }
 
