@@ -20,7 +20,7 @@ package cpt
 
 #cgo CFLAGS: -I ../czero/include
 
-#cgo LDFLAGS: -L ../czero/lib -lczerod
+#cgo LDFLAGS: -L ../czero/lib -lczero
 
 #include "zero.h"
 
