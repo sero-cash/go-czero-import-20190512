@@ -62,6 +62,15 @@ func ZeroInit(account_dir string, netType NetType) error {
 	return nil
 }
 
+func ZeroInit_NoCircuit() error {
+	go func() {
+		C.zero_init_no_circuit()
+		init_chan <- true
+	}()
+	<-init_chan
+	return nil
+}
+
 func Random() (out keys.Uint256) {
 	C.zero_random32(
 		(*C.uchar)(unsafe.Pointer(&out[0])),

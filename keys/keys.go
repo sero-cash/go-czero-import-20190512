@@ -57,7 +57,7 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 }
 
 func IsPKValid(pk *Uint512) bool {
-	ret := C.zero_is_pk_valid(
+	ret := C.zero_pk_valid(
 		(*C.uchar)(unsafe.Pointer(&pk[0])),
 	)
 
