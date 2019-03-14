@@ -17,6 +17,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/sero-cash/go-czero-import/cpt"
@@ -37,6 +38,26 @@ func TestCpt(t *testing.T) {
 	if rad_ret != rad {
 		t.FailNow()
 	}
+}
+
+func TestPKr(t *testing.T) {
+	seed := cpt.Random()
+	pk := keys.Seed2Addr(&seed)
+	pkr := keys.Addr2PKr(&pk, nil)
+	pk_58 := cpt.Base58Encode(pk[:])
+	pkr_58 := cpt.Base58Encode(pkr[:])
+
+	p768 := keys.PKr{}
+	p512 := keys.Uint512{}
+
+	cpt.Base58Decode(pk_58, p768[:])
+	cpt.Base58Decode(pkr_58, p512[:])
+
+	p512_str := cpt.Base58Encode(p768[:])
+	p256_str := cpt.Base58Encode(p512[:])
+
+	fmt.Println(p512_str)
+	fmt.Println(p256_str)
 }
 
 func TestKeys(t *testing.T) {

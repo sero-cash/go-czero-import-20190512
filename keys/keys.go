@@ -20,6 +20,7 @@ package keys
 #cgo CFLAGS: -I ../czero/include
 
 #cgo LDFLAGS: -L ../czero/lib
+
 #cgo LDFLAGS: -lczero
 
 #include "zero.h"
@@ -40,6 +41,14 @@ func logBytes(bytes []byte) {
 	return
 }
 
+func Sk2PK(sk *Uint512) (addr Uint512) {
+	C.zero_sk2pk(
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&addr[0])),
+	)
+	return
+}
+
 func Seed2Tk(seed *Uint256) (tk Uint512) {
 	C.zero_seed2tk(
 		(*C.uchar)(unsafe.Pointer(&seed[0])),
@@ -53,6 +62,18 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 		(*C.uchar)(unsafe.Pointer(&seed[0])),
 		(*C.uchar)(unsafe.Pointer(&addr[0])),
 	)
+	return
+}
+
+func Seed2PKr(seed *Uint256, rnd *Uint256) (pkr PKr) {
+	addr := Seed2Addr(seed)
+	var from_r Uint256
+	if rnd != nil {
+		copy(from_r[:], rnd[:])
+	} else {
+		from_r = RandUint256()
+	}
+	pkr = Addr2PKr(&addr, &from_r)
 	return
 }
 
@@ -139,6 +160,7 @@ func Addr2PKrAndLICr(addr *Uint512, height uint64) (pkr PKr, licr LICr, ret bool
 }
 
 func CheckLICr(pkr *PKr, licr *LICr, height uint64) bool {
+	//log.Info("CHECKLICr", "height:", height, "L", licr.L)
 	if !PKrValid(pkr) {
 		return false
 	}
@@ -187,6 +209,21 @@ func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256, flag bool) {
 		flag = true
 	}
 	return
+}
+
+func SignPKrBySk(sk *Uint512, data *Uint256, pkr *PKr) (sign Uint512, e error) {
+	C.zero_sign_pkr_by_sk(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&sign[0])),
+	)
+	if sign == Empty_Uint512 {
+		e = errors.New("SignOAddr: sign is empty")
+		return
+	} else {
+		return
+	}
 }
 
 func SignPKr(seed *Uint256, data *Uint256, pkr *PKr) (sign Uint512, e error) {
