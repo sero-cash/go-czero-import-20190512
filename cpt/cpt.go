@@ -78,6 +78,14 @@ func Random() (out keys.Uint256) {
 	return
 }
 
+func Force_Fr(data *keys.Uint256) (fr keys.Uint256) {
+	C.zero_force_fr(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&fr[0])),
+	)
+	return
+}
+
 func Combine(l *keys.Uint256, r *keys.Uint256) (out keys.Uint256) {
 	C.zero_merkle_combine(
 		(*C.uchar)(unsafe.Pointer(&l[0])),
@@ -348,6 +356,15 @@ func GenTil(tk *keys.Uint512, root_cm *keys.Uint256) (til keys.Uint256) {
 		(*C.uchar)(unsafe.Pointer(&tk[0])),
 		(*C.uchar)(unsafe.Pointer(&root_cm[0])),
 		(*C.uchar)(unsafe.Pointer(&til[0])),
+	)
+	return
+}
+
+func GenNil(sk *keys.Uint512, root_cm *keys.Uint256) (nil keys.Uint256) {
+	C.zero_nil(
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&root_cm[0])),
+		(*C.uchar)(unsafe.Pointer(&nil[0])),
 	)
 	return
 }

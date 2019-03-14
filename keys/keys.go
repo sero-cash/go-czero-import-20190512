@@ -20,6 +20,7 @@ package keys
 #cgo CFLAGS: -I ../czero/include
 
 #cgo LDFLAGS: -L ../czero/lib
+
 #cgo LDFLAGS: -lczero
 
 #include "zero.h"
@@ -36,6 +37,14 @@ func logBytes(bytes []byte) {
 	C.zero_log_bytes(
 		(*C.uchar)(unsafe.Pointer(&bytes[0])),
 		(C.int)(len(bytes)),
+	)
+	return
+}
+
+func Sk2PK(sk *Uint512) (addr Uint512) {
+	C.zero_sk2pk(
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&addr[0])),
 	)
 	return
 }
