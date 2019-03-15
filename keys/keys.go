@@ -65,6 +65,18 @@ func Seed2Addr(seed *Uint256) (addr Uint512) {
 	return
 }
 
+func Seed2PKr(seed *Uint256, rnd *Uint256) (pkr PKr) {
+	addr := Seed2Addr(seed)
+	var from_r Uint256
+	if rnd != nil {
+		copy(from_r[:], rnd[:])
+	} else {
+		from_r = RandUint256()
+	}
+	pkr = Addr2PKr(&addr, &from_r)
+	return
+}
+
 func IsPKValid(pk *Uint512) bool {
 	ret := C.zero_pk_valid(
 		(*C.uchar)(unsafe.Pointer(&pk[0])),
@@ -196,6 +208,21 @@ func FetchKey(tk *Uint512, rpk *Uint256) (ret Uint256, flag bool) {
 		flag = true
 	}
 	return
+}
+
+func SignPKrBySk(sk *Uint512, data *Uint256, pkr *PKr) (sign Uint512, e error) {
+	C.zero_sign_pkr_by_sk(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&sign[0])),
+	)
+	if sign == Empty_Uint512 {
+		e = errors.New("SignOAddr: sign is empty")
+		return
+	} else {
+		return
+	}
 }
 
 func SignPKr(seed *Uint256, data *Uint256, pkr *PKr) (sign Uint512, e error) {

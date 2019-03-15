@@ -118,6 +118,11 @@ type PKr [96]byte
 
 var Empty_PKr = PKr{}
 
+func (self *PKr) ToUint512() (ret Uint512) {
+	copy(ret[:], self[:])
+	return
+}
+
 func (self PKr) NewRef() (ret *PKr) {
 	ret = &PKr{}
 	copy(ret[:], self[:])

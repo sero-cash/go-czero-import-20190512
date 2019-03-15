@@ -31,6 +31,13 @@ extern char zero_ismy_pkr(
     const unsigned char tk[ZERO_TK_WIDTH]
 );
 
+extern void zero_sign_pkr_by_sk(
+    const unsigned char h[32],
+    const unsigned char sk[ZERO_PK_WIDTH],
+    const unsigned char pkr[ZERO_PKr_WIDTH],
+    unsigned char s[64]
+);
+
 extern void zero_sign_pkr(
     const unsigned char h[32],
     const unsigned char seed[32],

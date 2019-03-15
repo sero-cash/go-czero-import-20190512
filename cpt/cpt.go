@@ -245,7 +245,6 @@ func ConfirmOutput(desc *ConfirmOutputDesc) (e error) {
 
 type OutputDesc struct {
 	//---in---
-	Seed         keys.Uint256
 	Tkn_currency keys.Uint256
 	Tkn_value    keys.Uint256
 	Tkt_category keys.Uint256
@@ -265,7 +264,6 @@ type OutputDesc struct {
 func GenOutputProof(desc *OutputDesc) (e error) {
 	ret := C.zero_output(
 		//---in---
-		(*C.uchar)(unsafe.Pointer(&desc.Seed[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
@@ -370,6 +368,8 @@ func GenNil(sk *keys.Uint512, root_cm *keys.Uint256) (nil keys.Uint256) {
 }
 
 type InputDesc struct {
+	//---in0--
+	Sk keys.Uint512
 	//---in---
 	Seed  keys.Uint256
 	Pkr   keys.PKr
@@ -386,6 +386,33 @@ type InputDesc struct {
 	Nil_ret      keys.Uint256
 	Til_ret      keys.Uint256
 	Proof_ret    [PROOF_WIDTH]byte
+}
+
+func GenInputProofBySk(desc *InputDesc) (e error) {
+	ret := C.zero_input_by_sk(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Sk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--
+		C.ulong(desc.Index),
+		(*C.uchar)(unsafe.Pointer(&desc.Anchor[0])),
+		C.ulong(desc.Position),
+		(*C.uchar)(unsafe.Pointer(&desc.Path[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input desc error")
+		return
+	}
 }
 
 func GenInputProof(desc *InputDesc) (e error) {
@@ -630,6 +657,8 @@ func VerifyPkg(desc *PkgVerifyDesc) (e error) {
 }
 
 type InputSDesc struct {
+	//---in0---
+	Sk keys.Uint512
 	//---in---
 	Ehash  keys.Uint256
 	Seed   keys.Uint256
@@ -639,6 +668,26 @@ type InputSDesc struct {
 	Nil_ret  keys.Uint256
 	Til_ret  keys.Uint256
 	Sign_ret keys.Uint512
+}
+
+func GenInputSProofBySk(desc *InputSDesc) (e error) {
+	ret := C.zero_input_s_by_sk(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Ehash[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RootCM[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sign_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input s desc error")
+		return
+	}
 }
 
 func GenInputSProof(desc *InputSDesc) (e error) {

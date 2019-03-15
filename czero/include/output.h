@@ -26,7 +26,6 @@ extern void zero_root_commitment(
 
 extern char zero_output(
     //---in---
-    const unsigned char seed[32],
     const unsigned char tkn_currency[32],
     const unsigned char tkn_value[32],
     const unsigned char tkt_category[32],
