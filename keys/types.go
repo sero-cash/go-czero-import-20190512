@@ -88,6 +88,23 @@ func (b Uint512) MarshalText() ([]byte, error) {
 	return result, nil
 }
 
+func (b *Uint512) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Uint512{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Uint512")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
+}
+
 type Uint128 [16]byte
 
 func (b Uint128) MarshalText() ([]byte, error) {
@@ -138,4 +155,21 @@ func (b PKr) MarshalText() ([]byte, error) {
 	copy(result, `0x`)
 	hex.Encode(result[2:], b[:])
 	return result, nil
+}
+
+func (b *PKr) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := PKr{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "PKr")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
 }
