@@ -761,7 +761,8 @@ func VerifyInputS(desc *VerifyInputSDesc) (e error) {
 	}
 }
 
-const SIP1 = 130000
+const SIP1 = 130000 //for miner rewards
+const SIP2 = 535000 //for flight wallet
 
 func Miner_Hash_0(in []byte, num uint64) []byte {
 	var bs [64]byte
