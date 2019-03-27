@@ -27,9 +27,10 @@ const DEPTH = 29
 
 const SIP1 = 130000 //for miner rewards
 
-const SIP2 = 535000 //for flight wallet
+const SIP2 = 520000 //for flight wallet
 
-var AlphaNumber = uint64(511000)
+//const AlphaNumber = uint64(0)
+const AlphaNumber = uint64(SIP2)
 
 func IsAlphaNumber(num uint64) bool {
 	if AlphaNumber == 0 {
