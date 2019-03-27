@@ -24,3 +24,19 @@ const INFO_WIDTH = 32 + 32 + 32 + 32 + 32 + 64
 const PROOF_WIDTH = 131
 
 const DEPTH = 29
+
+const SIP1 = 130000 //for miner rewards
+
+const SIP2 = 535000 //for flight wallet
+
+var AlphaNumber = uint64(511000)
+
+func IsAlphaNumber(num uint64) bool {
+	if AlphaNumber == 0 {
+		return false
+	} else if num < AlphaNumber {
+		return false
+	} else {
+		return true
+	}
+}
