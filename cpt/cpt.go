@@ -190,13 +190,6 @@ func (self *Proof) ToHash() (ret keys.Uint256) {
 	return
 }
 
-func (self *Proof) ToHash_V1() (ret keys.Uint256) {
-	d := sha3.NewKeccak256()
-	d.Write(self[:])
-	copy(ret[:], d.Sum(nil))
-	return
-}
-
 type Common struct {
 	Seed     keys.Uint256
 	Hash_O   keys.Uint256
