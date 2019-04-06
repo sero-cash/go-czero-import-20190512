@@ -20,7 +20,7 @@ package cpt
 
 #cgo CFLAGS: -I ../czero/include
 
-#cgo LDFLAGS: -L ../czero/lib -lczero
+#cgo LDFLAGS: -L ../czero/lib -lczerod
 
 #include "zero.h"
 
@@ -38,7 +38,7 @@ import (
 )
 
 func Is_czero_debug() bool {
-	return false
+	return true
 }
 
 var init_chan = make(chan bool)
@@ -280,6 +280,12 @@ type OutputDesc struct {
 }
 
 func GenOutputProof(desc *OutputDesc) (e error) {
+	var is_v1 int
+	if desc.Height >= SIP2 {
+		is_v1 = 1
+	} else {
+		is_v1 = 0
+	}
 	ret := C.zero_output(
 		//---in---
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
@@ -288,7 +294,7 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
-		C.ulong(desc.Height),
+		(C.int)(is_v1),
 		//---out---
 		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
@@ -547,14 +553,22 @@ type OutputVerifyDesc struct {
 	OutCM   keys.Uint256
 	RPK     keys.Uint256
 	Proof   Proof
+	Height  uint64
 }
 
 func VerifyOutput(desc *OutputVerifyDesc) (e error) {
+	var is_v1 int
+	if desc.Height >= SIP2 {
+		is_v1 = 1
+	} else {
+		is_v1 = 0
+	}
 	ret := C.zero_output_verify(
 		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.OutCM[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Proof[0])),
+		(C.int)(is_v1),
 	)
 	if ret == 0 {
 		return

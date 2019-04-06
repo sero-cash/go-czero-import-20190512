@@ -32,7 +32,7 @@ extern char zero_output(
     const unsigned char tkt_value[32],
     const unsigned char memo[64],
     const unsigned char pkr[ZERO_PKr_WIDTH],
-    unsigned long height,
+    int is_v1,
     //---out---
     unsigned char asset_cm_ret[32],
     unsigned char ar_ret[32],
@@ -68,7 +68,8 @@ extern char zero_output_verify(
     const unsigned char asset_cm[32],
     const unsigned char out_cm[32],
     const unsigned char rpk[32],
-    const unsigned char proof[ZERO_PROOF_WIDTH]
+    const unsigned char proof[ZERO_PROOF_WIDTH],
+    int is_v1
 );
 
 extern char zero_output_confirm(
