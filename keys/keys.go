@@ -21,7 +21,7 @@ package keys
 
 #cgo LDFLAGS: -L ../czero/lib
 
-#cgo LDFLAGS: -lczerod
+#cgo LDFLAGS: -lczero
 
 #include "zero.h"
 */
