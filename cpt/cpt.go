@@ -29,6 +29,7 @@ import "C"
 import (
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"unsafe"
 
 	"github.com/sero-cash/go-sero/crypto/sha3"
@@ -74,6 +75,14 @@ func ZeroInit_NoCircuit() error {
 func Random() (out keys.Uint256) {
 	C.zero_random32(
 		(*C.uchar)(unsafe.Pointer(&out[0])),
+	)
+	return
+}
+
+func Force_Fr(data *keys.Uint256) (fr keys.Uint256) {
+	C.zero_force_fr(
+		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uchar)(unsafe.Pointer(&fr[0])),
 	)
 	return
 }
@@ -157,6 +166,23 @@ func (b Proof) MarshalText() ([]byte, error) {
 	return result, nil
 }
 
+func (b *Proof) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Proof{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Proof")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
+}
+
 func (self *Proof) ToHash() (ret keys.Uint256) {
 	d := sha3.NewKeccak256()
 	d.Write(self[:])
@@ -237,7 +263,6 @@ func ConfirmOutput(desc *ConfirmOutputDesc) (e error) {
 
 type OutputDesc struct {
 	//---in---
-	Seed         keys.Uint256
 	Tkn_currency keys.Uint256
 	Tkn_value    keys.Uint256
 	Tkt_category keys.Uint256
@@ -249,22 +274,27 @@ type OutputDesc struct {
 	Asset_cm_ret keys.Uint256
 	Ar_ret       keys.Uint256
 	Out_cm_ret   keys.Uint256
-	Einfo_ret    [INFO_WIDTH]byte
+	Einfo_ret    Einfo
 	RPK_ret      keys.Uint256
 	Proof_ret    Proof
 }
 
 func GenOutputProof(desc *OutputDesc) (e error) {
+	var is_v1 int
+	if desc.Height >= SIP2 {
+		is_v1 = 1
+	} else {
+		is_v1 = 0
+	}
 	ret := C.zero_output(
 		//---in---
-		(*C.uchar)(unsafe.Pointer(&desc.Seed[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_currency[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkn_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_category[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Tkt_value[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Memo[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
-		C.ulong(desc.Height),
+		(C.int)(is_v1),
 		//---out---
 		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
@@ -281,6 +311,32 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 	}
 }
 
+type Einfo [INFO_WIDTH]byte
+
+func (b Einfo) MarshalText() ([]byte, error) {
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
+}
+
+func (b *Einfo) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Einfo{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Einfo")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
+}
+
 type EncOutputInfo struct {
 	//---in---
 	Key          keys.Uint256
@@ -291,7 +347,7 @@ type EncOutputInfo struct {
 	Rsk          keys.Uint256
 	Memo         keys.Uint512
 	//---out---
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 }
 
 func EncOutput(desc *EncOutputInfo) {
@@ -313,7 +369,7 @@ type InfoDesc struct {
 	//---in---
 	Key   keys.Uint256
 	Flag  bool
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 	//---out---
 	Tkn_currency keys.Uint256
 	Tkn_value    keys.Uint256
@@ -352,12 +408,23 @@ func GenTil(tk *keys.Uint512, root_cm *keys.Uint256) (til keys.Uint256) {
 	return
 }
 
+func GenNil(sk *keys.Uint512, root_cm *keys.Uint256) (nil keys.Uint256) {
+	C.zero_nil(
+		(*C.uchar)(unsafe.Pointer(&sk[0])),
+		(*C.uchar)(unsafe.Pointer(&root_cm[0])),
+		(*C.uchar)(unsafe.Pointer(&nil[0])),
+	)
+	return
+}
+
 type InputDesc struct {
+	//---in0--
+	Sk keys.Uint512
 	//---in---
 	Seed  keys.Uint256
 	Pkr   keys.PKr
 	RPK   keys.Uint256
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 	//--
 	Index    uint64
 	Anchor   keys.Uint256
@@ -369,6 +436,33 @@ type InputDesc struct {
 	Nil_ret      keys.Uint256
 	Til_ret      keys.Uint256
 	Proof_ret    [PROOF_WIDTH]byte
+}
+
+func GenInputProofBySk(desc *InputDesc) (e error) {
+	ret := C.zero_input_by_sk(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Sk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Einfo[0])),
+		//--
+		C.ulong(desc.Index),
+		(*C.uchar)(unsafe.Pointer(&desc.Anchor[0])),
+		C.ulong(desc.Position),
+		(*C.uchar)(unsafe.Pointer(&desc.Path[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Asset_cm_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Ar_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Proof_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input desc error")
+		return
+	}
 }
 
 func GenInputProof(desc *InputDesc) (e error) {
@@ -485,14 +579,22 @@ type OutputVerifyDesc struct {
 	OutCM   keys.Uint256
 	RPK     keys.Uint256
 	Proof   Proof
+	Height  uint64
 }
 
 func VerifyOutput(desc *OutputVerifyDesc) (e error) {
+	var is_v1 int
+	if desc.Height >= SIP2 {
+		is_v1 = 1
+	} else {
+		is_v1 = 0
+	}
 	ret := C.zero_output_verify(
 		(*C.uchar)(unsafe.Pointer(&desc.AssetCM[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.OutCM[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.RPK[0])),
 		(*C.uchar)(unsafe.Pointer(&desc.Proof[0])),
+		(C.int)(is_v1),
 	)
 	if ret == 0 {
 		return
@@ -564,7 +666,7 @@ type PkgDesc struct {
 	Asset_cm_ret keys.Uint256
 	Ar_ret       keys.Uint256
 	Pkg_cm_ret   keys.Uint256
-	Einfo_ret    [INFO_WIDTH]byte
+	Einfo_ret    Einfo
 	Proof_ret    Proof
 }
 
@@ -613,6 +715,8 @@ func VerifyPkg(desc *PkgVerifyDesc) (e error) {
 }
 
 type InputSDesc struct {
+	//---in0---
+	Sk keys.Uint512
 	//---in---
 	Ehash  keys.Uint256
 	Seed   keys.Uint256
@@ -622,6 +726,26 @@ type InputSDesc struct {
 	Nil_ret  keys.Uint256
 	Til_ret  keys.Uint256
 	Sign_ret keys.Uint512
+}
+
+func GenInputSProofBySk(desc *InputSDesc) (e error) {
+	ret := C.zero_input_s_by_sk(
+		//---in---
+		(*C.uchar)(unsafe.Pointer(&desc.Ehash[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sk[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Pkr[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.RootCM[0])),
+		//---out---
+		(*C.uchar)(unsafe.Pointer(&desc.Nil_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Til_ret[0])),
+		(*C.uchar)(unsafe.Pointer(&desc.Sign_ret[0])),
+	)
+	if ret == 0 {
+		return
+	} else {
+		e = errors.New("gen input s desc error")
+		return
+	}
 }
 
 func GenInputSProof(desc *InputSDesc) (e error) {
@@ -669,8 +793,6 @@ func VerifyInputS(desc *VerifyInputSDesc) (e error) {
 		return
 	}
 }
-
-const SIP1 = 130000
 
 func Miner_Hash_0(in []byte, num uint64) []byte {
 	var bs [64]byte
