@@ -274,7 +274,7 @@ type OutputDesc struct {
 	Asset_cm_ret keys.Uint256
 	Ar_ret       keys.Uint256
 	Out_cm_ret   keys.Uint256
-	Einfo_ret    [INFO_WIDTH]byte
+	Einfo_ret    Einfo
 	RPK_ret      keys.Uint256
 	Proof_ret    Proof
 }
@@ -311,6 +311,32 @@ func GenOutputProof(desc *OutputDesc) (e error) {
 	}
 }
 
+type Einfo [INFO_WIDTH]byte
+
+func (b Einfo) MarshalText() ([]byte, error) {
+	result := make([]byte, len(b)*2+2)
+	copy(result, `0x`)
+	hex.Encode(result[2:], b[:])
+	return result, nil
+}
+
+func (b *Einfo) UnmarshalText(input []byte) error {
+	raw := input[2:]
+	if len(raw) == 0 {
+		return nil
+	}
+	dec := Einfo{}
+	if len(raw)/2 != len(dec[:]) {
+		return fmt.Errorf("hex string has length %d, want %d for %s", len(raw), len(dec[:])*2, "Einfo")
+	}
+	if _, err := hex.Decode(dec[:], raw); err != nil {
+		return err
+	} else {
+		*b = dec
+	}
+	return nil
+}
+
 type EncOutputInfo struct {
 	//---in---
 	Key          keys.Uint256
@@ -321,7 +347,7 @@ type EncOutputInfo struct {
 	Rsk          keys.Uint256
 	Memo         keys.Uint512
 	//---out---
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 }
 
 func EncOutput(desc *EncOutputInfo) {
@@ -343,7 +369,7 @@ type InfoDesc struct {
 	//---in---
 	Key   keys.Uint256
 	Flag  bool
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 	//---out---
 	Tkn_currency keys.Uint256
 	Tkn_value    keys.Uint256
@@ -398,7 +424,7 @@ type InputDesc struct {
 	Seed  keys.Uint256
 	Pkr   keys.PKr
 	RPK   keys.Uint256
-	Einfo [INFO_WIDTH]byte
+	Einfo Einfo
 	//--
 	Index    uint64
 	Anchor   keys.Uint256
@@ -640,7 +666,7 @@ type PkgDesc struct {
 	Asset_cm_ret keys.Uint256
 	Ar_ret       keys.Uint256
 	Pkg_cm_ret   keys.Uint256
-	Einfo_ret    [INFO_WIDTH]byte
+	Einfo_ret    Einfo
 	Proof_ret    Proof
 }
 
