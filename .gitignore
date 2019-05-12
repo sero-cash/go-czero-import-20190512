@@ -6,3 +6,4 @@ czero/data/BLIC.DATA
 czero/data/ALIC.DATA
 czero/data/license/BLIC.DATA
 czero/lib
+czero/lib_DARWIN_AMD64/libczerod.dylib
