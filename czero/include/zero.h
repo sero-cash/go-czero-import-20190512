@@ -49,22 +49,32 @@ extern void zero_merkle_combine(
 
 
 
-extern void zero_hash_0(
+extern void zero_hash_0_enter(
     const unsigned char in[40],
     const unsigned char out[64]
 );
 
-extern void zero_hash_1(
+extern void zero_hash_0_leave(
     const unsigned char in[96],
     const unsigned char out[32]
 );
 
-extern void zero_hash_2(
+extern void zero_hash_1_enter(
     const unsigned char in[40],
     const unsigned char out[64]
 );
 
-extern void zero_hash_3(
+extern void zero_hash_1_leave(
+    const unsigned char in[96],
+    const unsigned char out[32]
+);
+
+extern void zero_hash_2_enter(
+    const unsigned char in[40],
+    const unsigned char out[64]
+);
+
+extern void zero_hash_2_leave(
     const unsigned char in[96],
     const unsigned char out[32]
 );

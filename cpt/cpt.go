@@ -796,13 +796,18 @@ func VerifyInputS(desc *VerifyInputSDesc) (e error) {
 
 func Miner_Hash_0(in []byte, num uint64) []byte {
 	var bs [64]byte
-	if num < SIP1 {
-		C.zero_hash_0(
+	if num >= VP1 {
+		C.zero_hash_2_enter(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	} else if num >= SIP1 {
+		C.zero_hash_1_enter(
 			(*C.uchar)(unsafe.Pointer(&in[0])),
 			(*C.uchar)(unsafe.Pointer(&bs[0])),
 		)
 	} else {
-		C.zero_hash_2(
+		C.zero_hash_0_enter(
 			(*C.uchar)(unsafe.Pointer(&in[0])),
 			(*C.uchar)(unsafe.Pointer(&bs[0])),
 		)
@@ -812,13 +817,18 @@ func Miner_Hash_0(in []byte, num uint64) []byte {
 
 func Miner_Hash_1(in []byte, num uint64) []byte {
 	var bs [32]byte
-	if num < SIP1 {
-		C.zero_hash_1(
+	if num >= VP1 {
+		C.zero_hash_2_leave(
+			(*C.uchar)(unsafe.Pointer(&in[0])),
+			(*C.uchar)(unsafe.Pointer(&bs[0])),
+		)
+	} else if num >= SIP1 {
+		C.zero_hash_1_leave(
 			(*C.uchar)(unsafe.Pointer(&in[0])),
 			(*C.uchar)(unsafe.Pointer(&bs[0])),
 		)
 	} else {
-		C.zero_hash_3(
+		C.zero_hash_0_leave(
 			(*C.uchar)(unsafe.Pointer(&in[0])),
 			(*C.uchar)(unsafe.Pointer(&bs[0])),
 		)
